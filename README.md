@@ -37,6 +37,13 @@
 ---
 ### 구현 기능
 
+- 설정
+- [x] Swagger
+- [x] Security
+- [x] MailSender
+- [x] PasswordEncoder
+- [ ] Jwt Filter
+
 - 회원 
 - [ ] 회원가입
 - [ ] 이메일 인증

@@ -29,8 +29,10 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+
     // Spring Core
     implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework:spring-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
     // JPA
@@ -38,6 +40,8 @@ dependencies {
 
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+
 }
 
 test {
