@@ -3,6 +3,7 @@ package com.example.common.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -17,5 +18,10 @@ public abstract class BaseEntity {
     private Long id;
 
     @CreatedDate
+    @Column(nullable = false)
     private LocalDateTime createTime;
+
+    @LastModifiedDate
+    @Column(nullable = true)
+    private LocalDateTime updateTime;
 }
