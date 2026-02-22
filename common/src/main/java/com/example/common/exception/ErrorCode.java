@@ -6,7 +6,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
 
-    INVALID_REQUEST(HttpStatus.BAD_REQUEST, 200, "잘못된 요청입니다.");
+    INVALID_REQUEST(HttpStatus.BAD_REQUEST, 200, "잘못된 요청입니다."),
+    EMAIL_EXIST(HttpStatus.BAD_REQUEST, 200,"이미 존재하는 이메일입니다.");
 
     private final HttpStatus httpStatus;
     private final int status;
