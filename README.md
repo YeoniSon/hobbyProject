@@ -42,11 +42,12 @@
 - [x] Security
 - [x] MailSender
 - [x] PasswordEncoder
-- [ ] Jwt Filter
+- [x] Jwt Filter
 
 - 회원 
-- [ ] 회원가입
-- [ ] 이메일 인증
+- [x] 회원가입
+- [x] 이메일 인증
+- [ ] 회원정보 수정
 - [ ] 비밀번호 재설정
 - [ ] 회원 탈퇴
 - [ ] 로그인
