@@ -1,5 +1,6 @@
 package com.example.api.security.jwt;
 
+import com.example.common.token.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

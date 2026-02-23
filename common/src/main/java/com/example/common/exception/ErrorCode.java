@@ -7,11 +7,18 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, 200, "잘못된 요청입니다."),
+    // TOKEN 에러
     INVALID_TOKEN(HttpStatus.BAD_REQUEST, 200, "토큰이 존재하지 않습니다."),
     ALREADY_USED_TOKEN(HttpStatus.BAD_REQUEST, 200, "이미 사용이 완료된 토큰입니다."),
     EXPIRED_TOKEN(HttpStatus.BAD_REQUEST, 200, "만료된 토큰입니다."),
     INVALID_TOKEN_TYPE(HttpStatus.BAD_REQUEST, 200, "맞지 않는 토큰입니다."),
-    DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST, 200, "이미 존재하는 이메일입니다.");
+    // 회원 관련
+    USER_NOT_FOUND(HttpStatus.BAD_REQUEST, 200, "맞지 않는 토큰입니다."),
+    DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST, 200, "이미 존재하는 이메일입니다."),
+    DUPLICATE_PHONE(HttpStatus.BAD_REQUEST, 200, "이미 존재하는 전화번호입니다."),
+    DUPLICATE_NICKNAME(HttpStatus.BAD_REQUEST, 200, "이미 존재하는 닉네임입니다."),
+    //로그인
+    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, 200, "비밀번호가 일치하지 않습니다.");
 
     private final HttpStatus httpStatus;
     private final int status;
