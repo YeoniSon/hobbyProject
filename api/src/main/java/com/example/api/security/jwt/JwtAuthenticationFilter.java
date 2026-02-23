@@ -1,6 +1,8 @@
 package com.example.api.security.jwt;
 
+import com.example.api.security.CustomUserDetails;
 import com.example.common.token.JwtTokenProvider;
+import com.example.user.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,9 +19,11 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserRepository userRepository;
 
-    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
+    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, UserRepository userRepository) {
         this.jwtTokenProvider = jwtTokenProvider;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -30,12 +34,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			String token = header.substring(7);
 			if (jwtTokenProvider.validateToken(token)) {
 				Long userId = jwtTokenProvider.getUserId(token);
-
-				UsernamePasswordAuthenticationToken auth =
-						new UsernamePasswordAuthenticationToken(userId, null, null);
-				auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-				SecurityContextHolder.getContext().setAuthentication(auth);
+				userRepository.findById(userId).ifPresent(user -> {
+					CustomUserDetails userDetails = new CustomUserDetails(user);
+					UsernamePasswordAuthenticationToken auth =
+							new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+					auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+					SecurityContextHolder.getContext().setAuthentication(auth);
+				});
 			}
         }
         filterChain.doFilter(request, response);

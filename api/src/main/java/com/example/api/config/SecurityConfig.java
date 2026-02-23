@@ -33,11 +33,17 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
 								"/swagger-ui.html",
-								// h2-console 접근 허용
+                                // h2-console 접근 허용
 								"/h2-console/**",
-                                // user 접근 허용
-                                "/users/**"
+                                // 회원가입·이메일 인증·로그인만 비인증 허용
+                                "/users/signup",
+                                "/users/email-verify",
+                                "/users/login"
                         ).permitAll()
+                        // 프로필 조회/수정은 인증 필요
+                        .requestMatchers("/users/profile", "/users/profile/edit").authenticated()
+                        // 그 외 /users 하위는 인증 필요
+                        .requestMatchers("/users/**").authenticated()
 
                         // 나머지는 인증 필요
                         .anyRequest().authenticated()
