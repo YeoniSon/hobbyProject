@@ -8,7 +8,7 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -17,6 +17,9 @@ public class User extends BaseEntity {
 
     @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false)
+    private String name;
 
     @Column(nullable = false)
     private String password;
