@@ -22,6 +22,10 @@ public class LoginService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new BusinessException(ErrorCode.DUPLICATE_EMAIL));
 
+        if (!user.isEmailVerified()) {
+            throw new BusinessException(ErrorCode.NOT_VERIFIED);
+        }
+
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new BusinessException(ErrorCode.INVALID_PASSWORD);
         }
