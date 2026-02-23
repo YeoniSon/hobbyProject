@@ -32,6 +32,8 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+    implementation 'org.springframework.security:spring-security-crypto'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 

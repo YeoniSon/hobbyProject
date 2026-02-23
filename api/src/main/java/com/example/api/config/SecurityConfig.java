@@ -34,7 +34,9 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
 								"/swagger-ui.html",
 								// h2-console 접근 허용
-								"/h2-console/**"
+								"/h2-console/**",
+                                // user 접근 허용
+                                "/users/**"
                         ).permitAll()
 
                         // 나머지는 인증 필요
