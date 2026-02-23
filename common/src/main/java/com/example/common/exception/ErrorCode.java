@@ -17,8 +17,10 @@ public enum ErrorCode {
     DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST, 200, "이미 존재하는 이메일입니다."),
     DUPLICATE_PHONE(HttpStatus.BAD_REQUEST, 200, "이미 존재하는 전화번호입니다."),
     DUPLICATE_NICKNAME(HttpStatus.BAD_REQUEST, 200, "이미 존재하는 닉네임입니다."),
+    NO_CHANGE(HttpStatus.BAD_REQUEST, 200, "수정할 내용이 기존 정보와 동일합니다."),
     //로그인
-    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, 200, "비밀번호가 일치하지 않습니다.");
+    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, 200, "비밀번호가 일치하지 않습니다."),
+    NOT_VERIFIED(HttpStatus.BAD_REQUEST, 200,  "인증이 되지 않았습니다.");
 
     private final HttpStatus httpStatus;
     private final int status;
