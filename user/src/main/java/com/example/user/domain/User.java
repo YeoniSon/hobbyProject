@@ -48,4 +48,9 @@ public class User extends BaseEntity {
     public void verifyEmail() {
         this.emailVerified = true;
     }
+
+    public void updateProfile(String nickname, String phone) {
+        if (nickname != null) this.nickname = nickname;
+        if (phone != null) this.phone = phone;
+    }
 }

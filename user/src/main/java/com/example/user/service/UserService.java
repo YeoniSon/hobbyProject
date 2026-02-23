@@ -8,6 +8,8 @@ import com.example.common.mail.MailService;
 import com.example.user.domain.AuthToken;
 import com.example.user.domain.User;
 import com.example.user.dto.request.SignUpRequest;
+import com.example.user.dto.request.UpdateUserRequest;
+import com.example.user.dto.response.UserDataReponse;
 import com.example.user.repository.AuthTokenRepository;
 import com.example.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -56,6 +58,54 @@ public class UserService {
                 .birth(request.getBirth())
                 .role(Role.USER)
                 .build();
+    }
+
+    /*
+    회원 정보
+     */
+    @Transactional
+    public UserDataReponse getUserInfo(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        return UserDataReponse.from(user);
+    }
+
+    /*
+    회원 정보 수정
+     */
+    @Transactional
+    public UserDataReponse updateUser(Long userId, UpdateUserRequest request) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        // 수정 요청값이 기존 정보와 모두 같으면 에러
+        boolean nicknameUnchanged = request.getNickname() == null || request.getNickname().equals(user.getNickname());
+        boolean phoneUnchanged = request.getPhone() == null || request.getPhone().equals(user.getPhone());
+        
+        if (nicknameUnchanged && phoneUnchanged) {
+            throw new BusinessException(ErrorCode.NO_CHANGE);
+        }
+
+        if (request.getNickname() != null
+                && !request.getNickname().equals(user.getNickname())
+                && userRepository.existsByNickname(request.getNickname())) {
+            throw new BusinessException(ErrorCode.DUPLICATE_NICKNAME);
+        }
+        if (request.getPhone() != null
+                && !request.getPhone().equals(user.getPhone())
+                && userRepository.existsByPhone(request.getPhone())) {
+            throw new BusinessException(ErrorCode.DUPLICATE_PHONE);
+        }
+
+        user.updateProfile(
+                request.getNickname(),
+                request.getPhone()
+        );
+
+        return UserDataReponse.from(user);
+
     }
 
 }
