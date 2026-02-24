@@ -1,6 +1,5 @@
 package com.example.user.dto.request;
 
-import com.example.common.enums.Role;
 import lombok.Getter;
 
 @Getter
