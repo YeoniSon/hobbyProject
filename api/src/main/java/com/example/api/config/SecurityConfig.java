@@ -43,6 +43,8 @@ public class SecurityConfig {
                                 "/users/reset-password",
                                 "/users/reset-password/email-verify",
                                 "/users/reset-password/change-password",
+                                "/users/deposit",
+                                "/users/withdraw",
                                 "/admin/register"
                         ).permitAll()
                         // 프로필 조회/수정은 인증 필요
