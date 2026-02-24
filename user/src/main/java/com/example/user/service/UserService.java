@@ -18,6 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.user.service.EmailVerificationService;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +30,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificationService emailVerificationService;
+    private final AuthTokenRepository authTokenRepository;
+    private final MailService mailService;
 
     /*
     회원가입 로직 구현
@@ -106,6 +111,55 @@ public class UserService {
 
         return UserDataReponse.from(user);
 
+    }
+
+    // 비밀번호 재설정(로그인 상태)
+    @Transactional
+    public void changePassword(Long userId, String currentPassword, String newPassword ) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        // 현재 비밀번호 검증
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new BusinessException(ErrorCode.INVALID_PASSWORD);
+        }
+
+        // 새 비밀번호가 이전 비밀번호와 동일한지 체크
+        if (passwordEncoder.matches(newPassword, user.getPassword())) {
+            throw new BusinessException(ErrorCode.SAME_PASSWORD);
+        }
+
+        // 새 비밀번호 재설정
+        user.changePassword(passwordEncoder.encode(newPassword));
+    }
+
+    // 비밀번호 리셋
+    @Transactional
+    public void resetPassword(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_EMAIL));
+
+        // 기존 토큰 삭제
+        authTokenRepository.deleteByUserAndType(user, TokenType.PASSWORD_RESET);
+
+        emailVerificationService.sendResetPasswordEmail(user);
+    }
+
+
+    // 비밀번호 재설정(로그인 x)
+    @Transactional
+    public void changeResetPassword(String token, String newPassword) {
+        AuthToken authToken = authTokenRepository
+                .findByTokenAndType(token, TokenType.PASSWORD_RESET)
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_TOKEN_TYPE));
+
+        if (!authToken.isUsed() || authToken.isExpired()) {
+            throw new BusinessException(ErrorCode.UNUSED_EXPIRED_TOKEN);
+        }
+
+        User user = authToken.getUser();
+        user.changePassword(passwordEncoder.encode(newPassword));
+        authTokenRepository.delete(authToken); // 사용한 토큰 삭제
     }
 
 }
