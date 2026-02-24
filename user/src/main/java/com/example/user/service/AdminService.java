@@ -60,7 +60,7 @@ public class AdminService {
 
     // 회원 정보 탈퇴 유저 제외 전체 조회
     public List<UserDataReponse> getAllUsersWithoutWithdraw() {
-        return userRepository.findAllByWithdrawFalse()
+        return userRepository.findAllByDeletedFalse()
                 .stream()
                 .map(UserDataReponse::from)
                 .toList();
@@ -68,7 +68,7 @@ public class AdminService {
 
     // 회원 정보 탈퇴 유저 조회
     public List<UserDataReponse> getWithdrawUsers() {
-        return userRepository.findByWithdrawTrue()
+        return userRepository.findByDeletedTrue()
                 .stream()
                 .map(UserDataReponse::from)
                 .toList();

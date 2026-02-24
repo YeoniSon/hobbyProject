@@ -33,6 +33,20 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getAllUsers());
     }
 
+    @GetMapping("/users-without-withdraw")
+    public ResponseEntity<List<UserDataReponse>> getAllUsersWithoutWithdraw(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ){
+        return ResponseEntity.ok(adminService.getAllUsersWithoutWithdraw());
+    }
+
+    @GetMapping("/withdraw-users")
+    public ResponseEntity<List<UserDataReponse>> getAllWithdrawUsers(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ){
+        return ResponseEntity.ok(adminService.getWithdrawUsers());
+    }
+
     @GetMapping("/{userId}")
     public ResponseEntity<UserDataReponse> getUserById(
             @AuthenticationPrincipal CustomUserDetails userDetails,

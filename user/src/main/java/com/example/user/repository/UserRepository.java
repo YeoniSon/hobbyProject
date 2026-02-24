@@ -11,9 +11,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findAll();
 
-    List<User> findAllByWithdrawFalse();
+    List<User> findAllByDeletedFalse();
 
-    List<User> findByWithdrawTrue();
+    List<User> findByDeletedTrue();
 
     boolean existsByEmail(String email);
     boolean existsByNickname(String nickname);

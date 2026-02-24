@@ -30,6 +30,10 @@ public class LoginService {
             throw new BusinessException(ErrorCode.INVALID_PASSWORD);
         }
 
+        if (user.isDeleted()){
+            throw new BusinessException(ErrorCode.WITHDRAW_EMAIL);
+        }
+
         return jwtTokenProvider.createToken(
                 user.getId(),
                 user.getEmail(),
