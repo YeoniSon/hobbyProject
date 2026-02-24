@@ -58,6 +58,22 @@ public class AdminService {
                 .toList();
     }
 
+    // 회원 정보 탈퇴 유저 제외 전체 조회
+    public List<UserDataReponse> getAllUsersWithoutWithdraw() {
+        return userRepository.findAllByWithdrawFalse()
+                .stream()
+                .map(UserDataReponse::from)
+                .toList();
+    }
+
+    // 회원 정보 탈퇴 유저 조회
+    public List<UserDataReponse> getWithdrawUsers() {
+        return userRepository.findByWithdrawTrue()
+                .stream()
+                .map(UserDataReponse::from)
+                .toList();
+    }
+
     // 특정 회원 정보 조회
     public UserDataReponse getUserById(Long id) {
         User user = userRepository.findById(id)
@@ -88,4 +104,15 @@ public class AdminService {
 
         user.withdraw();
     }
+
+
+    // 복구
+    @Transactional
+    public void depositUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(()-> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        user.deposit();
+    }
+
 }

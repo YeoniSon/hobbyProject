@@ -50,4 +50,22 @@ public class AdminController {
         adminService.changeRole(userId, roleChangeDto.getRole());
         return ResponseEntity.ok().build();
     }
+
+    @PatchMapping("/{userId}/withdraw")
+    public ResponseEntity<Void> adminWithdraw(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long userId
+    ){
+        adminService.withdrawUser(userId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{userId}/deposit")
+    public ResponseEntity<Void> adminDeposit(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long userId
+    ){
+        adminService.depositUser(userId);
+        return ResponseEntity.ok().build();
+    }
 }

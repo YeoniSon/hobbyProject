@@ -161,4 +161,30 @@ public class UserService {
         authTokenRepository.delete(authToken); // 사용한 토큰 삭제
     }
 
+    //회원 탈퇴
+    @Transactional
+    public void userWithdraw(Long id, String password) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new BusinessException(ErrorCode.INVALID_PASSWORD);
+        }
+
+        user.withdraw();
+    }
+
+    //회원 복구
+    @Transactional
+    public void userDeposit(String email, String password) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new BusinessException(ErrorCode.INVALID_PASSWORD);
+        }
+
+        user.deposit();
+    }
+
 }
