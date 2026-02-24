@@ -42,12 +42,20 @@ public class SecurityConfig {
                                 // 비밀번호 재설정(로그인 없이 접근)
                                 "/users/reset-password",
                                 "/users/reset-password/email-verify",
-                                "/users/reset-password/change-password"
+                                "/users/reset-password/change-password",
+                                "/admin/register"
                         ).permitAll()
                         // 프로필 조회/수정은 인증 필요
                         .requestMatchers("/users/profile", "/users/profile/edit").authenticated()
                         // 그 외 /users 하위는 인증 필요
                         .requestMatchers("/users/**").authenticated()
+
+                        // 관리자 전용 (ADMIN 역할 필요)
+                        .requestMatchers(
+                                "/admin/users",
+                                "/admin/{userId}",
+                                "/admin/{userId}/role"
+                        ).hasRole("ADMIN")
 
                         // 나머지는 인증 필요
                         .anyRequest().authenticated()

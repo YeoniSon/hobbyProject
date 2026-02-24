@@ -31,7 +31,6 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificationService emailVerificationService;
     private final AuthTokenRepository authTokenRepository;
-    private final MailService mailService;
 
     /*
     회원가입 로직 구현

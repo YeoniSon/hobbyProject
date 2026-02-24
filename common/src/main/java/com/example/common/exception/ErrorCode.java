@@ -26,6 +26,9 @@ public enum ErrorCode {
     //비밀번호 변경
     SAME_PASSWORD(HttpStatus.BAD_REQUEST, 200, "기존 비밀번호와 동일합니다."),
     NOT_EXIST_EMAIL(HttpStatus.BAD_REQUEST, 200, "존재하지 않은 이메일입니다."),
+
+    // 회원관리 관련
+    NOT_CHANGEABLE_ROLE(HttpStatus.BAD_REQUEST, 200, "권한 변경 불가합니다.")
     ;
 
     private final HttpStatus httpStatus;
