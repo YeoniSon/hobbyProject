@@ -1,10 +1,8 @@
 package com.example.api.controller.user;
 
 import com.example.api.security.CustomUserDetails;
+import com.example.user.dto.request.*;
 import com.example.user.dto.request.changePassword.ChangePasswordRequest;
-import com.example.user.dto.request.LoginRequest;
-import com.example.user.dto.request.SignUpRequest;
-import com.example.user.dto.request.UpdateUserRequest;
 import com.example.user.dto.request.changePassword.ChangeResetPasswordRequest;
 import com.example.user.dto.request.changePassword.ResetPasswordRequest;
 import com.example.user.dto.response.LoginResponse;
@@ -117,6 +115,33 @@ public class UserController {
         );
 
         System.out.println("비밀번호 변경 완료");
+        return ResponseEntity.ok().build();
+    }
+
+    //회원 탈퇴
+    @PatchMapping("/withdraw")
+    public ResponseEntity<Void> withdraw(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody WithdrawRequest request
+    ){
+        userService.userWithdraw(
+                userDetails.getId(),
+                request.getPassword()
+        );
+
+        return ResponseEntity.ok().build();
+    }
+
+    // 계정 복구
+    @PatchMapping("/deposit")
+    public ResponseEntity<Void> deposit(
+            @RequestBody DepositRequest requset
+    ){
+        userService.userDeposit(
+                requset.getEmail(),
+                requset.getPassword()
+        );
+
         return ResponseEntity.ok().build();
     }
 

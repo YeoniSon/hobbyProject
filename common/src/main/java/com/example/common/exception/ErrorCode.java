@@ -22,6 +22,7 @@ public enum ErrorCode {
     //로그인
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, 200, "비밀번호가 일치하지 않습니다."),
     NOT_VERIFIED(HttpStatus.BAD_REQUEST, 200,  "인증이 되지 않았습니다."),
+    WITHDRAW_EMAIL(HttpStatus.BAD_REQUEST, 200,  "탈퇴된 계정입니다."),
 
     //비밀번호 변경
     SAME_PASSWORD(HttpStatus.BAD_REQUEST, 200, "기존 비밀번호와 동일합니다."),

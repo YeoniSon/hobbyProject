@@ -62,6 +62,10 @@ public class User extends BaseEntity {
         this.deleted = true;
     }
 
+    public void deposit() {
+        this.deleted = false;
+    }
+
     public void changeRole(Role role) {
         this.role = role;
     }

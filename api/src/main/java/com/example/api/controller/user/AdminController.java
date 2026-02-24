@@ -33,6 +33,20 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getAllUsers());
     }
 
+    @GetMapping("/users-without-withdraw")
+    public ResponseEntity<List<UserDataReponse>> getAllUsersWithoutWithdraw(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ){
+        return ResponseEntity.ok(adminService.getAllUsersWithoutWithdraw());
+    }
+
+    @GetMapping("/withdraw-users")
+    public ResponseEntity<List<UserDataReponse>> getAllWithdrawUsers(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ){
+        return ResponseEntity.ok(adminService.getWithdrawUsers());
+    }
+
     @GetMapping("/{userId}")
     public ResponseEntity<UserDataReponse> getUserById(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -48,6 +62,24 @@ public class AdminController {
             @RequestBody RoleChangeDto roleChangeDto
     ) {
         adminService.changeRole(userId, roleChangeDto.getRole());
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{userId}/withdraw")
+    public ResponseEntity<Void> adminWithdraw(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long userId
+    ){
+        adminService.withdrawUser(userId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{userId}/deposit")
+    public ResponseEntity<Void> adminDeposit(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long userId
+    ){
+        adminService.depositUser(userId);
         return ResponseEntity.ok().build();
     }
 }
