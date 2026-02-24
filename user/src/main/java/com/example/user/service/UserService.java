@@ -4,7 +4,6 @@ import com.example.common.enums.Role;
 import com.example.common.enums.TokenType;
 import com.example.common.exception.BusinessException;
 import com.example.common.exception.ErrorCode;
-import com.example.common.mail.MailService;
 import com.example.user.domain.AuthToken;
 import com.example.user.domain.User;
 import com.example.user.dto.request.SignUpRequest;
@@ -16,10 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.example.user.service.EmailVerificationService;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 
 @Service
