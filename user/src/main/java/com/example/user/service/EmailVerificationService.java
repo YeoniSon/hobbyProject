@@ -58,8 +58,10 @@ public class EmailVerificationService {
         User user = token.getUser();
         user.verifyEmail();
 
-        token.markUsed(); // used = true
+        authTokenRepository.delete(token); // 사용 완료한 토큰 삭제
     }
+
+
 
     private void validateToken(AuthToken token) {
         if (token.isUsed()) {
@@ -72,6 +74,53 @@ public class EmailVerificationService {
         if (token.getExpireAt().isBefore(LocalDateTime.now())) {
             throw new BusinessException(ErrorCode.EXPIRED_TOKEN);
         }
+    }
+
+    /** 비밀번호 재설정 링크의 토큰 검증. PASSWORD_RESET 타입만 허용, 사용 후에는 change-password에서 처리. */
+    @Transactional
+    public void verifyResetPasswordToken(String tokenValue) {
+        AuthToken token = authTokenRepository.findByToken(tokenValue)
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_TOKEN));
+
+        if (token.isUsed()) {
+            throw new BusinessException(ErrorCode.ALREADY_USED_TOKEN);
+        }
+        if (token.getType() != TokenType.PASSWORD_RESET) {
+            throw new BusinessException(ErrorCode.INVALID_TOKEN_TYPE);
+        }
+        if (token.getExpireAt().isBefore(LocalDateTime.now())) {
+            throw new BusinessException(ErrorCode.EXPIRED_TOKEN);
+        }
+        // 검증만 수행, 실제 사용(삭제)는 change-password 시점에 수행
+        token.markUsed();
+    }
+
+
+    @Transactional
+    public void sendResetPasswordEmail(User user) {
+
+        AuthToken token = createResetToken(user);
+        authTokenRepository.save(token);
+
+        String link  = "http://localhost:8080/users/reset-password/email-verify?token="
+                + token.getToken();
+
+        String subject = "HabitProject 비밀번호 재설정 인증";
+        String text = "<p>" + user.getName() + "님의 HabitProject 비밀번호 재설정을 하기 위한 메일입니다.</p>"
+                + "<p><a href=\"" + link + "\"> 재설정 </a>을 눌러 비밀번호를 변경하세요.</p>";
+
+
+        mailService.sendMail(user.getEmail(), subject, text);
+    }
+
+    private AuthToken createResetToken(User user) {
+        return AuthToken.builder()
+                .token(UUID.randomUUID().toString())
+                .user(user)
+                .type(TokenType.PASSWORD_RESET)
+                .expireAt(LocalDateTime.now().plusMinutes(15))
+                .used(false)
+                .build();
     }
 }
 

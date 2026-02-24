@@ -1,20 +1,20 @@
 package com.example.api.controller.user;
 
 import com.example.api.security.CustomUserDetails;
+import com.example.user.dto.request.changePassword.ChangePasswordRequest;
 import com.example.user.dto.request.LoginRequest;
 import com.example.user.dto.request.SignUpRequest;
 import com.example.user.dto.request.UpdateUserRequest;
+import com.example.user.dto.request.changePassword.ChangeResetPasswordRequest;
+import com.example.user.dto.request.changePassword.ResetPasswordRequest;
 import com.example.user.dto.response.LoginResponse;
 import com.example.user.dto.response.UserDataReponse;
 import com.example.user.service.EmailVerificationService;
 import com.example.user.service.LoginService;
 import com.example.user.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -67,4 +67,58 @@ public class UserController {
     ) {
         return ResponseEntity.ok(userService.updateUser(userDetails.getId(), request));
     }
+
+    /*
+    비밀번호 재설정 -> 로그인 되어있는 경우, 안되어있는 경우
+    로그인 되어있는 경우 -> 변경가능
+    안되어있는 경우 -> 토큰으로 인증 후 비밀번호 리셋, 변경
+     */
+    @PatchMapping("/change-password")
+    public ResponseEntity<Void> changePassword(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody ChangePasswordRequest request
+    ) {
+        userService.changePassword(
+                userDetails.getId(),
+                request.getCurrentPassword(),
+                request.getNewPassword()
+        );
+
+        System.out.println("비밀번호 변경 완료");
+        return ResponseEntity.ok().build();
+    }
+
+    // 비밀번호 리셋
+    @PostMapping("/reset-password")
+    public ResponseEntity<Void> resetPassword(
+            @RequestBody ResetPasswordRequest request
+    ) {
+        userService.resetPassword(request.getEmail());
+        return ResponseEntity.ok().build();
+    }
+
+    // 비밀번호 리셋 인증 (메일 링크 클릭 시 토큰 검증)
+    @PostMapping("/reset-password/email-verify")
+    public ResponseEntity<Void> passwordVerifyEmail(
+            @RequestParam String token
+    ) {
+        emailVerificationService.verifyResetPasswordToken(token);
+        return ResponseEntity.ok().build();
+    }
+
+    // 비밀번호 변경(로그인 x)
+    @PostMapping("/reset-password/change-password")
+    public ResponseEntity<Void> changeResetPassword(
+            @RequestBody ChangeResetPasswordRequest request
+    ) {
+        userService.changeResetPassword(
+                request.getToken(),
+                request.getNewPassword()
+        );
+
+        System.out.println("비밀번호 변경 완료");
+        return ResponseEntity.ok().build();
+    }
+
+
 }

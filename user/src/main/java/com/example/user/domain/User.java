@@ -41,10 +41,6 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private Role role;
 
-    public void encodePassword(String encodedPassword) {
-        this.password = encodedPassword;
-    }
-
     public void verifyEmail() {
         this.emailVerified = true;
     }
@@ -52,5 +48,9 @@ public class User extends BaseEntity {
     public void updateProfile(String nickname, String phone) {
         if (nickname != null) this.nickname = nickname;
         if (phone != null) this.phone = phone;
+    }
+
+    public void changePassword(String encodedPassword) {
+        this.password = encodedPassword;
     }
 }

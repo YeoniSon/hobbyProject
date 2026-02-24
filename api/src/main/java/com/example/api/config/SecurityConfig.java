@@ -38,7 +38,11 @@ public class SecurityConfig {
                                 // 회원가입·이메일 인증·로그인만 비인증 허용
                                 "/users/signup",
                                 "/users/email-verify",
-                                "/users/login"
+                                "/users/login",
+                                // 비밀번호 재설정(로그인 없이 접근)
+                                "/users/reset-password",
+                                "/users/reset-password/email-verify",
+                                "/users/reset-password/change-password"
                         ).permitAll()
                         // 프로필 조회/수정은 인증 필요
                         .requestMatchers("/users/profile", "/users/profile/edit").authenticated()
