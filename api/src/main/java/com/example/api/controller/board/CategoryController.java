@@ -29,7 +29,7 @@ public class CategoryController {
     }
 
     // 카테고리 조회(전체)
-    @GetMapping("/all-categories")
+    @GetMapping("/manage/all-categories")
     public ResponseEntity<List<CategoryResponse>> getAllCategories(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
@@ -37,7 +37,7 @@ public class CategoryController {
     }
 
     // 카테고리 조회(show true)
-    @GetMapping("/show-categories")
+    @GetMapping("/manage/show-categories")
     public ResponseEntity<List<CategoryResponse>> getShowCategories(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ){
@@ -45,7 +45,7 @@ public class CategoryController {
     }
 
     // 카테고리 조회(show false)
-    @GetMapping("/not-show-categories")
+    @GetMapping("/manage/not-show-categories")
     public ResponseEntity<List<CategoryResponse>> getNotShowCategories(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ){
@@ -53,7 +53,7 @@ public class CategoryController {
     }
 
     // 카테고리 비공개 처리
-    @PatchMapping("/private")
+    @PatchMapping("/manage/private")
     public ResponseEntity<String> categoryPrivate(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long categoryId
@@ -63,7 +63,7 @@ public class CategoryController {
     }
 
     // 카테고리 공개 처리
-    @PatchMapping("/release")
+    @PatchMapping("/manage/release")
     public ResponseEntity<String> categoryRelease(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long categoryId
