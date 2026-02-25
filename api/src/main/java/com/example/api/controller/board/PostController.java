@@ -1,12 +1,11 @@
 package com.example.api.controller.board;
 
 import com.example.api.security.CustomUserDetails;
-import com.example.dto.request.PostUploadRequest;
+import com.example.dto.request.post.PostUploadRequest;
 import com.example.dto.response.PostDataResponse;
 import com.example.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -79,6 +78,7 @@ public class PostController {
     ) {
         return ResponseEntity.ok(postService.getPostById(postId));
     }
+
 
 
 }

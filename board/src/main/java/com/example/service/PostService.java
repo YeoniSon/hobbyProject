@@ -4,7 +4,8 @@ import com.example.common.exception.BusinessException;
 import com.example.common.exception.ErrorCode;
 import com.example.domain.Category;
 import com.example.domain.Post;
-import com.example.dto.request.PostUploadRequest;
+import com.example.dto.request.post.PostEditRequest;
+import com.example.dto.request.post.PostUploadRequest;
 import com.example.dto.response.PostDataResponse;
 import com.example.repository.CategoryRepository;
 import com.example.repository.PostRepository;
@@ -99,4 +100,24 @@ public class PostService {
                         .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_POST)));
     }
 
+    // 게시글 수정 - 입력된 필드만 변경, 입력 안 한 필드는 기존 값 유지
+    @Transactional
+    public PostDataResponse editPost(Long postId, PostEditRequest request) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_POST));
+
+        if (request.getCategoryId() != null) {
+            Category category = categoryRepository.findById(request.getCategoryId())
+                    .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_CATEGORY));
+            post.updateCategory(category);
+        }
+        if (request.getTitle() != null && !request.getTitle().isBlank()) {
+            post.updateTitle(request.getTitle());
+        }
+        if (request.getContent() != null && !request.getContent().isBlank()) {
+            post.updateContent(request.getContent());
+        }
+
+        return PostDataResponse.from(post);
+    }
 }

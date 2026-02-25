@@ -27,4 +27,15 @@ public class Post extends BaseShowEntity {
     @Column(nullable = false)
     private String content;
 
+    public void updateCategory(Category category) {
+        this.categoryId = category;
+    }
+
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 }
