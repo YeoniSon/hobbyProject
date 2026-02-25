@@ -54,6 +54,15 @@ public class PostService {
                 .build();
     }
 
+    //게시글 조회
+    @Transactional
+    public List<PostDataResponse> getAllPost() {
+        return postRepository.findAll()
+                .stream()
+                .map(PostDataResponse::from)
+                .toList();
+    }
+
     // 게시글 조회(회원별) - userId(Long)로 조회
     @Transactional(readOnly = true)
     public List<PostDataResponse> getPostsByUserId(Long userId) {
