@@ -21,6 +21,7 @@ public class PostDataResponse {
                 .categoryName(post.getCategoryId().getName())
                 .title(post.getTitle())
                 .content(post.getContent())
+                .show(post.isShow())
                 .build();
     }
 }
