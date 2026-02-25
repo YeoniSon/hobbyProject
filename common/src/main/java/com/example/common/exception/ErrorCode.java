@@ -40,6 +40,7 @@ public enum ErrorCode {
 
     // Post 관련
     NOT_EXIST_POST(HttpStatus.BAD_REQUEST, 200, "존재하지 않는 게시글입니다."),
+    NOT_MATCH_WRITER(HttpStatus.BAD_REQUEST, 200, "작성자가 맞지 않습니다."),
     ;
 
     private final HttpStatus httpStatus;
