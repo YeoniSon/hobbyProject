@@ -4,6 +4,7 @@ import com.example.common.exception.BusinessException;
 import com.example.common.exception.ErrorCode;
 import com.example.domain.Comment;
 import com.example.domain.Post;
+import com.example.dto.request.comment.CommentEditRequest;
 import com.example.dto.request.comment.CommentUploadRequest;
 import com.example.dto.response.CommentResponse;
 import com.example.repository.CommentRepository;
@@ -127,6 +128,29 @@ public class CommentService {
                 .stream()
                 .map(CommentResponse::from)
                 .toList();
+    }
+
+    // 댓글 수정
+    @Transactional
+    public CommentResponse editComment(
+            Long commentId,
+            CommentEditRequest request
+    ){
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(()-> new BusinessException(ErrorCode.NOT_EXIST_COMMENT));
+
+        boolean contetUnchanged = request.getContent() == null || request.getContent().isBlank()
+                || request.getContent().equals(comment.getContent());
+
+        if (contetUnchanged){
+            throw new BusinessException(ErrorCode.NO_CHANGE);
+        }
+
+        if (request.getContent() != null && !request.getContent().isBlank()){
+            comment.updateContent(request.getContent());
+        }
+
+        return CommentResponse.from(comment);
     }
 
 

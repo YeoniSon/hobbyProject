@@ -23,4 +23,8 @@ public class Comment extends BaseShowEntity {
 
     @Column(nullable = false)
     private String content;
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 }

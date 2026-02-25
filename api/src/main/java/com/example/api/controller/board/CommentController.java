@@ -1,6 +1,7 @@
 package com.example.api.controller.board;
 
 import com.example.api.security.CustomUserDetails;
+import com.example.dto.request.comment.CommentEditRequest;
 import com.example.dto.request.comment.CommentUploadRequest;
 import com.example.dto.response.CommentResponse;
 import com.example.service.CommentService;
@@ -77,6 +78,16 @@ public class CommentController {
             @AuthenticationPrincipal CustomUserDetails userDetails
     ){
         return ResponseEntity.ok(commentService.getShowComment());
+    }
+
+    // 댓글 수정
+    @PatchMapping("/{commentId}/edit-comment")
+    public ResponseEntity<CommentResponse> editComment(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long commentId,
+            @RequestBody CommentEditRequest request
+    ){
+        return ResponseEntity.ok(commentService.editComment(commentId, request));
     }
 }
 
