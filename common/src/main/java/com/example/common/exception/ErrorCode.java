@@ -37,6 +37,10 @@ public enum ErrorCode {
     NOT_EXIST_CATEGORY(HttpStatus.BAD_REQUEST, 200, "존재하지 않는 카테고리입니다."),
     ALREADY_DELETE_CATEGORY(HttpStatus.BAD_REQUEST, 200, "이미 삭제된 카테고리입니다."),
     ALREADY_SHOW_CATEGORY(HttpStatus.BAD_REQUEST, 200, "이미 공개되어있는 카테고리입니다."),
+
+    // Post 관련
+    NOT_EXIST_POST(HttpStatus.BAD_REQUEST, 200, "존재하지 않는 게시글입니다."),
+    NOT_MATCH_WRITER(HttpStatus.BAD_REQUEST, 200, "작성자가 맞지 않습니다."),
     ;
 
     private final HttpStatus httpStatus;
