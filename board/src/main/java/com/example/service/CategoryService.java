@@ -71,6 +71,32 @@ public class CategoryService {
                 .toList();
     }
 
+    // 카테고리 삭제 -> show false 로 변경
+    @Transactional
+    public void privateCategory(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_CATEGORY));
+
+        if (category.isShow()) {
+            category.deleteShow();
+        }else {
+            throw new BusinessException(ErrorCode.ALREADY_DELETE_CATEGORY);
+        }
+    }
+
+    // 카테고리 복구 -> show true 로 변경
+    @Transactional
+    public void releaseCategory(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_CATEGORY));
+
+        if (!category.isShow()) {
+            category.depositShow();
+        }else {
+            throw new BusinessException(ErrorCode.ALREADY_SHOW_CATEGORY);
+        }
+    }
+
 
 
 }

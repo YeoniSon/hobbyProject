@@ -52,5 +52,25 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.getShowFalseCategory());
     }
 
+    // 카테고리 비공개 처리
+    @PatchMapping("/private")
+    public ResponseEntity<String> categoryPrivate(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long categoryId
+    ){
+        categoryService.privateCategory(categoryId);
+        return ResponseEntity.ok().body("카테고리 비공개 처리완료");
+    }
+
+    // 카테고리 공개 처리
+    @PatchMapping("/release")
+    public ResponseEntity<String> categoryRelease(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long categoryId
+    ) {
+        categoryService.releaseCategory(categoryId);
+        return ResponseEntity.ok().body("카테고리 공개 처리완료");
+    }
+
 
 }
