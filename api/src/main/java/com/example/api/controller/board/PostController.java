@@ -1,6 +1,7 @@
 package com.example.api.controller.board;
 
 import com.example.api.security.CustomUserDetails;
+import com.example.dto.request.post.PostEditRequest;
 import com.example.dto.request.post.PostUploadRequest;
 import com.example.dto.response.PostDataResponse;
 import com.example.service.PostService;
@@ -37,7 +38,7 @@ public class PostController {
     }
 
     // 관리자: 회원별 게시글 조회 (userId 선택 가능). 관리자만 호출 가능
-    @GetMapping("/view/{userId}")
+    @GetMapping("/manage/view/{userId}")
     public ResponseEntity<List<PostDataResponse>> getPostsByUserId(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long userId
@@ -46,7 +47,7 @@ public class PostController {
     }
 
     // 관리자: 카테고리별 게시글 조회
-    @GetMapping("/view/{categoryId}")
+    @GetMapping("/manage/view/{categoryId}")
     public ResponseEntity<List<PostDataResponse>> getPostsByCategoryId(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long categoryId
@@ -55,7 +56,7 @@ public class PostController {
     }
 
     // 관리자: 게시글 조회 (공개)
-    @GetMapping("/view/show")
+    @GetMapping("/manage/view/show")
     public ResponseEntity<List<PostDataResponse>> getPostsByShow(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
@@ -63,7 +64,7 @@ public class PostController {
     }
 
     // 관리자: 게시글 조회 (비공개)
-    @GetMapping("/view/private")
+    @GetMapping("/manage/view/private")
     public ResponseEntity<List<PostDataResponse>> getPostsByPrivate(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
@@ -79,6 +80,43 @@ public class PostController {
         return ResponseEntity.ok(postService.getPostById(postId));
     }
 
+    // 게시글 수정
+    @PatchMapping("/{postId}/edit")
+    public ResponseEntity<PostDataResponse> editPost(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long postId,
+            @RequestBody PostEditRequest request
+    ){
+        return ResponseEntity.ok(postService.editPost(postId, request));
+    }
 
+    // 회원: 게시글 삭제
+    @PutMapping("/{postId}/delete")
+    public ResponseEntity<String> deletePost(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long postId
+    ) {
+        postService.deletePost(postId);
+        return ResponseEntity.ok(postId + "삭제 완료했습니다.");
+    }
 
+    // 관리자: 게시글 삭제(비공개)
+    @PatchMapping("/manage/{postId}/delete")
+    public ResponseEntity<String> privatePost(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long postId
+    ) {
+        postService.privatePost(postId);
+        return ResponseEntity.ok("게시글 삭제(비공개) success");
+    }
+
+    // 관리자: 게시글 복구(공개)
+    @PatchMapping("/manage/{postId}/release")
+    public ResponseEntity<String> releasePost(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long postId
+    ){
+        postService.releasePost(postId);
+        return ResponseEntity.ok("게시글 복구(공개) success");
+    }
 }

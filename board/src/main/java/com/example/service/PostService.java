@@ -66,9 +66,9 @@ public class PostService {
     }
 
     // 게시글 조회(카테고리별)
-    @Transactional
+    @Transactional(readOnly = true)
     public List<PostDataResponse> getAllByCategoryIdPost(Long categoryId) {
-        return postRepository.findAllByCategoryId(categoryId)
+        return postRepository.findAllByCategoryId_Id(categoryId)
                 .stream()
                 .map(PostDataResponse::from)
                 .toList();
@@ -102,7 +102,10 @@ public class PostService {
 
     // 게시글 수정 - 입력된 필드만 변경, 입력 안 한 필드는 기존 값 유지
     @Transactional
-    public PostDataResponse editPost(Long postId, PostEditRequest request) {
+    public PostDataResponse editPost(
+            Long postId,
+            PostEditRequest request
+    ) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_POST));
 
@@ -120,4 +123,33 @@ public class PostService {
 
         return PostDataResponse.from(post);
     }
+
+    // 회원: 게시글 삭제
+    @Transactional
+    public void deletePost(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_POST));
+
+        postRepository.delete(post);
+    }
+
+    // 관리자: 게시글 삭제(비공개)
+    @Transactional
+    public void privatePost(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_POST));
+
+        post.deleteShow();
+    }
+
+    // 관리자:게시글 복구(공개)
+    @Transactional
+    public void releasePost(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_POST));
+
+        post.depositShow();
+    }
+
+
 }
