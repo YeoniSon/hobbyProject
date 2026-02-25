@@ -89,5 +89,35 @@ public class CommentController {
     ){
         return ResponseEntity.ok(commentService.editComment(commentId, request));
     }
+
+    // 댓글 삭제
+    @PutMapping("/{commentId}/delete")
+    public ResponseEntity<String> deleteComment(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long commentId
+    ){
+        commentService.deleteComment(userDetails.getId(), commentId);
+        return ResponseEntity.ok("success");
+    }
+
+    // 댓글 비공개처리
+    @PatchMapping("/manage/{commentId}/private-comment")
+    public ResponseEntity<String> editPrivateComment(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long commentId
+    ){
+        commentService.privateComment(commentId);
+        return ResponseEntity.ok("success");
+    }
+
+    // 댓글 공개처리
+    @PatchMapping("/manage/{commentId}/show-comment")
+    public ResponseEntity<String> editShowComment(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long commentId
+    ){
+        commentService.showComment(commentId);
+        return ResponseEntity.ok("success");
+    }
 }
 

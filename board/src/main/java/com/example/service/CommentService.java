@@ -153,6 +153,33 @@ public class CommentService {
         return CommentResponse.from(comment);
     }
 
+    //댓글 삭제
+    public void deleteComment(Long userId, Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_COMMENT));
+
+        if (!userId.equals(comment.getUser().getId())) {
+            throw new BusinessException(ErrorCode.NOT_MATCH_WRITER);
+        }
+        commentRepository.delete(comment);
+    }
+
+    //댓글 비공개
+    public void privateComment(Long commentId){
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_COMMENT));
+
+
+        comment.deleteShow();
+    }
+
+    // 댓글 공개
+    public void showComment(Long commentId){
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_COMMENT));
+
+        comment.depositShow();
+    }
 
 
 }
