@@ -28,7 +28,7 @@ public class AdminController {
     }
 
     // 계정 전체 조회
-    @GetMapping("/users")
+    @GetMapping("/manage/users")
     public ResponseEntity<List<UserDataReponse>> getAllUsers(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
@@ -36,7 +36,7 @@ public class AdminController {
     }
 
     // 계정 삭제 처리 제외 전체 조회
-    @GetMapping("/users-without-withdraw")
+    @GetMapping("/manage/users-without-withdraw")
     public ResponseEntity<List<UserDataReponse>> getAllUsersWithoutWithdraw(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ){
@@ -44,7 +44,7 @@ public class AdminController {
     }
 
     // 계정 삭제 처리 조회
-    @GetMapping("/withdraw-users")
+    @GetMapping("/manage/withdraw-users")
     public ResponseEntity<List<UserDataReponse>> getAllWithdrawUsers(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ){
@@ -52,7 +52,7 @@ public class AdminController {
     }
 
     // 특정 계정 정보 조회
-    @GetMapping("/{userId}")
+    @GetMapping("/manage/{userId}")
     public ResponseEntity<UserDataReponse> getUserById(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long userId
@@ -61,7 +61,7 @@ public class AdminController {
     }
 
     // 특정 계정 역할 변경
-    @PatchMapping("/{userId}/role")
+    @PatchMapping("/manage/{userId}/role")
     public ResponseEntity<Void> changeRole(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long userId,
@@ -72,7 +72,7 @@ public class AdminController {
     }
 
     // 특정 계정 삭제처리
-    @PatchMapping("/{userId}/withdraw")
+    @PatchMapping("/manage/{userId}/withdraw")
     public ResponseEntity<Void> adminWithdraw(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long userId
@@ -82,7 +82,7 @@ public class AdminController {
     }
 
     // 특정 계정 복구처리
-    @PatchMapping("/{userId}/deposit")
+    @PatchMapping("/manage/{userId}/deposit")
     public ResponseEntity<Void> adminDeposit(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long userId

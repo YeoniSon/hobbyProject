@@ -43,22 +43,36 @@ public class SecurityConfig {
                                 "/users/reset-password",
                                 "/users/reset-password/email-verify",
                                 "/users/reset-password/change-password",
+                                // 관리자 계정 등록
+                                "/admin/register",
+                                //게시글 관련
+                                "/post/upload",
+                                "/post/my-posts",
+                                "/post/{postId}/detail"
+                        ).permitAll()
+
+                        // 프로필 조회/수정은 인증 필요
+                        .requestMatchers(
                                 "/users/deposit",
                                 "/users/withdraw",
-                                "/admin/register"
-                        ).permitAll()
-                        // 프로필 조회/수정은 인증 필요
-                        .requestMatchers("/users/profile", "/users/profile/edit").authenticated()
-                        // 그 외 /users 하위는 인증 필요
-                        .requestMatchers("/users/**").authenticated()
-                        .requestMatchers("/category/register").authenticated()
-                        .requestMatchers(("/category/manage/**")).hasRole("ADMIN")
+                                "/users/profile",
+                                "/users/profile/edit",
+                                "/users/change-password",
+
+                                // 카테고리 등록은 인증 필요
+                                "/category/register"
+                        ).authenticated()
 
                         // 관리자 전용 (ADMIN 역할 필요)
                         .requestMatchers(
-                                "/admin/users",
-                                "/admin/{userId}",
-                                "/admin/{userId}/role"
+                                //카테고리 관리
+                                "/category/manage/**",
+                                // 게시글 관리
+                                "/post/manage/**",
+
+                                // 계정 관리
+                                "/admin/manage/**"
+
                         ).hasRole("ADMIN")
 
                         // 나머지는 인증 필요
