@@ -44,7 +44,10 @@ public enum ErrorCode {
 
     // Notice 관련
     DUPLICATE_NOTICE(HttpStatus.BAD_REQUEST, 200, "이미 존재하는 공지사항입니다."),
-    NOT_EXIST_NOTICE(HttpStatus.BAD_REQUEST, 200, "존재하지 않는 공지사항입니다.");
+    NOT_EXIST_NOTICE(HttpStatus.BAD_REQUEST, 200, "존재하지 않는 공지사항입니다."),
+
+    // 댓글 관련
+    NOT_EXIST_COMMENT(HttpStatus.BAD_REQUEST,200 , "존재하지 않는 댓글입니다.");
 
     private final HttpStatus httpStatus;
     private final int status;
