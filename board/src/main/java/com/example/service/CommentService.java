@@ -5,6 +5,7 @@ import com.example.common.exception.ErrorCode;
 import com.example.domain.Comment;
 import com.example.domain.Post;
 import com.example.dto.request.comment.CommentUploadRequest;
+import com.example.dto.response.CommentResponse;
 import com.example.repository.CommentRepository;
 import com.example.repository.PostRepository;
 import com.example.user.domain.User;
@@ -12,6 +13,8 @@ import com.example.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -42,7 +45,7 @@ public class CommentService {
             throw new BusinessException(ErrorCode.NOT_EXIST_POST);
         }
 
-        if (commentRepository.existsByWriterId(userId)){
+        if (commentRepository.existsByUserId(userId)){
             throw new BusinessException(ErrorCode.USER_NOT_FOUND);
         }
     }
@@ -59,4 +62,73 @@ public class CommentService {
                 .content(request.getContent())
                 .build();
     }
+
+    // 댓글 조회(회원)
+    @Transactional
+    public List<CommentResponse> getAllCommentByWriterId(Long writerId) {
+        User user = userRepository.findById(writerId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        return commentRepository.findAllByUserId(user.getId())
+                .stream()
+                .map(CommentResponse::from)
+                .toList();
+    }
+
+    // 댓글 조회 회원 아이디, 게시글 별(회원)
+    @Transactional
+    public List<CommentResponse> getAllCommentByWriterIdAndPostId(Long writerId, Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_POST));
+        User user = userRepository.findById(writerId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        return commentRepository.findAllByPostIdAndUserId(post.getId(), user.getId())
+                .stream()
+                .map(CommentResponse::from)
+                .toList();
+
+    }
+
+    // 댓글 전체 조회(관리자)
+    @Transactional
+    public List<CommentResponse> getAllComment() {
+        return commentRepository.findAll()
+                .stream()
+                .map(CommentResponse::from)
+                .toList();
+    }
+
+    // 댓글 조회(게시글 별)
+    @Transactional
+    public List<CommentResponse> getAllCommentByPostId(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_POST));
+
+        return commentRepository.findAllByPostId(post.getId())
+                .stream()
+                .map(CommentResponse::from)
+                .toList();
+    }
+
+    // 댓글 조회(비공개)
+    @Transactional
+    public List<CommentResponse> getPrivateComment() {
+        return commentRepository.findAllByShowFalse()
+                .stream()
+                .map(CommentResponse::from)
+                .toList();
+    }
+
+    //댓글 조회(공개)
+    @Transactional
+    public List<CommentResponse> getShowComment() {
+        return commentRepository.findAllByShowTrue()
+                .stream()
+                .map(CommentResponse::from)
+                .toList();
+    }
+
+
+
 }

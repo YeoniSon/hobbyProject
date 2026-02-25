@@ -44,11 +44,8 @@ public class SecurityConfig {
                                 "/users/reset-password/email-verify",
                                 "/users/reset-password/change-password",
                                 // 관리자 계정 등록
-                                "/admin/register",
-                                //게시글 관련
-                                "/post/upload",
-                                "/post/my-posts",
-                                "/post/{postId}/detail"
+                                "/admin/register"
+
                         ).permitAll()
 
                         // 프로필 조회/수정은 인증 필요
@@ -60,7 +57,17 @@ public class SecurityConfig {
                                 "/users/change-password",
 
                                 // 카테고리 등록은 인증 필요
-                                "/category/register"
+                                "/category/register",
+
+                                //게시글 관련
+                                "/post/upload",
+                                "/post/my-posts",
+                                "/post/{postId}/detail",
+
+                                // 댓글 관련
+                                "/comment/upload",
+                                "/comment/{userId}/all-comments",
+                                "/comment/{postId}/all-comments"
                         ).authenticated()
 
                         // 관리자 전용 (ADMIN 역할 필요)
@@ -71,7 +78,10 @@ public class SecurityConfig {
                                 "/post/manage/**",
 
                                 // 계정 관리
-                                "/admin/manage/**"
+                                "/admin/manage/**",
+
+                                // 댓글 관리
+                                "/comment/manage/**"
 
                         ).hasRole("ADMIN")
 

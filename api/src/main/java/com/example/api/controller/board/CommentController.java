@@ -2,14 +2,14 @@ package com.example.api.controller.board;
 
 import com.example.api.security.CustomUserDetails;
 import com.example.dto.request.comment.CommentUploadRequest;
+import com.example.dto.response.CommentResponse;
 import com.example.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/comment")
@@ -28,4 +28,55 @@ public class CommentController {
     }
 
 
+    // 댓글 회원 전체 조회(회원)
+    @GetMapping("/{userId}/all-comments")
+    public ResponseEntity<List<CommentResponse>> getAllComments(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long userId
+    ) {
+        return ResponseEntity.ok(commentService.getAllCommentByWriterId(userId));
+    }
+
+    // 댓글 회원 아이디, 게시글 조회(회원)
+    @GetMapping("/{postId}/all-comments")
+    public ResponseEntity<List<CommentResponse>> getAllCommentsByPostIdAndWriterId(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long postId
+    ){
+        return ResponseEntity.ok(commentService.getAllCommentByWriterIdAndPostId(userDetails.getId(), postId));
+    }
+
+    // 댓글 전체 조회(관리자)
+    @GetMapping("/manage/all-comments")
+    public ResponseEntity<List<CommentResponse>> getComments(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        return ResponseEntity.ok(commentService.getAllComment());
+    }
+
+    // 댓글 게시글별 조회(관리자)
+    @GetMapping("/manage/{postId}/all-comments")
+    public ResponseEntity<List<CommentResponse>> getCommentsByPostId(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long postId
+    ){
+        return ResponseEntity.ok(commentService.getAllCommentByPostId(postId));
+    }
+
+    // 댓글 비공개 조회(관리자)
+    @GetMapping("/manage/private-comments")
+    public ResponseEntity<List<CommentResponse>> getPrivateComments(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ){
+        return ResponseEntity.ok(commentService.getPrivateComment());
+    }
+
+    // 댓글 공개 조회(관리자)
+    @GetMapping("/manage/show-comments")
+    public ResponseEntity<List<CommentResponse>> getShowComments(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ){
+        return ResponseEntity.ok(commentService.getShowComment());
+    }
 }
+
