@@ -19,6 +19,7 @@ public class AdminController {
 
     private final AdminService adminService;
 
+    // 관리자 등록
     @PostMapping("/register")
     public void register(
             @RequestBody SignUpRequest request
@@ -26,6 +27,7 @@ public class AdminController {
         adminService.adminRegister(request);
     }
 
+    // 계정 전체 조회
     @GetMapping("/users")
     public ResponseEntity<List<UserDataReponse>> getAllUsers(
             @AuthenticationPrincipal CustomUserDetails userDetails
@@ -33,6 +35,7 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getAllUsers());
     }
 
+    // 계정 삭제 처리 제외 전체 조회
     @GetMapping("/users-without-withdraw")
     public ResponseEntity<List<UserDataReponse>> getAllUsersWithoutWithdraw(
             @AuthenticationPrincipal CustomUserDetails userDetails
@@ -40,6 +43,7 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getAllUsersWithoutWithdraw());
     }
 
+    // 계정 삭제 처리 조회
     @GetMapping("/withdraw-users")
     public ResponseEntity<List<UserDataReponse>> getAllWithdrawUsers(
             @AuthenticationPrincipal CustomUserDetails userDetails
@@ -47,6 +51,7 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getWithdrawUsers());
     }
 
+    // 특정 계정 정보 조회
     @GetMapping("/{userId}")
     public ResponseEntity<UserDataReponse> getUserById(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -55,6 +60,7 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getUserById(userId));
     }
 
+    // 특정 계정 역할 변경
     @PatchMapping("/{userId}/role")
     public ResponseEntity<Void> changeRole(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -65,6 +71,7 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
+    // 특정 계정 삭제처리
     @PatchMapping("/{userId}/withdraw")
     public ResponseEntity<Void> adminWithdraw(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -74,6 +81,7 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
+    // 특정 계정 복구처리
     @PatchMapping("/{userId}/deposit")
     public ResponseEntity<Void> adminDeposit(
             @AuthenticationPrincipal CustomUserDetails userDetails,
