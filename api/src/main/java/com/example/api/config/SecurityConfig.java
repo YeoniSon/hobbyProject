@@ -51,7 +51,8 @@ public class SecurityConfig {
                         .requestMatchers("/users/profile", "/users/profile/edit").authenticated()
                         // 그 외 /users 하위는 인증 필요
                         .requestMatchers("/users/**").authenticated()
-                        .requestMatchers("/category/**").authenticated()
+                        .requestMatchers("/category/register").authenticated()
+                        .requestMatchers(("/category/manage/**")).hasRole("ADMIN")
 
                         // 관리자 전용 (ADMIN 역할 필요)
                         .requestMatchers(
