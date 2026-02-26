@@ -67,7 +67,10 @@ public class SecurityConfig {
                                 // 댓글 관련
                                 "/comment/upload",
                                 "/comment/{userId}/all-comments",
-                                "/comment/{postId}/all-comments"
+                                "/comment/{postId}/all-comments",
+
+                                // 좋아요 관련
+                                "/like/**"
                         ).authenticated()
 
                         // 관리자 전용 (ADMIN 역할 필요)
