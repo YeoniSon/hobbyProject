@@ -75,6 +75,15 @@ public class NoticeService {
                 .toList();
     }
 
+    // 공지사항 세부 조회
+    @Transactional
+    public NoticeResponse getNoticeInfo(Long noticeId) {
+        Notice notice = noticeRepository.findById(noticeId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_NOTICE));
+
+        return NoticeResponse.from(notice);
+    }
+
     // 공지사항 수정 - 입력된 필드만 변경, 입력 안 한 필드는 기존 값 유지
     @Transactional
     public NoticeResponse editNotice(Long noticeId, NoticeEditRequest request) {

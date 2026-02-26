@@ -81,7 +81,10 @@ public class SecurityConfig {
                                 "/admin/manage/**",
 
                                 // 댓글 관리
-                                "/comment/manage/**"
+                                "/comment/manage/**",
+
+                                //공지사항 관리
+                                "/notice/manage/**"
 
                         ).hasRole("ADMIN")
 
