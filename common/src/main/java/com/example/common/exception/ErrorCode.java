@@ -47,7 +47,12 @@ public enum ErrorCode {
     NOT_EXIST_NOTICE(HttpStatus.BAD_REQUEST, 200, "존재하지 않는 공지사항입니다."),
 
     // 댓글 관련
-    NOT_EXIST_COMMENT(HttpStatus.BAD_REQUEST,200 , "존재하지 않는 댓글입니다.");
+    NOT_EXIST_COMMENT(HttpStatus.BAD_REQUEST,200 , "존재하지 않는 댓글입니다."),
+
+    // 좋아요 관련
+    ALREADY_EXIST_LIKE(HttpStatus.BAD_REQUEST,200, "이미 좋아요를 눌렀습니다."),
+    NOT_EXIST_LIKE(HttpStatus.BAD_REQUEST, 200, "좋아요가 없습니다.");
+
 
     private final HttpStatus httpStatus;
     private final int status;
