@@ -4,21 +4,23 @@ import com.example.common.entity.BaseEntity;
 import com.example.common.enums.TargetType;
 import com.example.user.domain.User;
 import jakarta.persistence.*;
+
 import lombok.*;
 
 @Entity
-@Table(name = "like")
+@Table(name = "likes")
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Like extends BaseEntity {
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User userId;
+    private User user;
 
-    @Column(name = "target_type",nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "target_type", nullable = false)
     private TargetType targetType;
 
     @Column(name = "target_id", nullable = false)

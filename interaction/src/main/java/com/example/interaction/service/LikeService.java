@@ -5,7 +5,6 @@ import com.example.common.exception.BusinessException;
 import com.example.common.exception.ErrorCode;
 import com.example.domain.Post;
 import com.example.interaction.domain.Like;
-import com.example.interaction.dto.request.PostLikeRequest;
 import com.example.interaction.repository.LikeRepository;
 import com.example.repository.PostRepository;
 import com.example.user.domain.User;
@@ -29,27 +28,23 @@ public class LikeService {
 
     // 게시판 좋아요 등록
     @Transactional
-    public void postLike(PostLikeRequest request) {
-        User user = userRepository.findById(request.getUser().getId())
+    public void postLike(Long userId, Long postId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        Post post = postRepository.findById(request.getTargetId().getId())
+        Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_POST));
 
-        if (postRepository.findById(post.getId()).isEmpty()) {
-            throw new BusinessException(ErrorCode.NOT_EXIST_POST);
-        }
-
-        if (likeRepository.existsByUserId_IdAndTargetId(user.getId(), post.getId())) {
+        if (likeRepository.existsByUser_IdAndTargetId(user.getId(), post.getId())) {
             throw new BusinessException(ErrorCode.ALREADY_EXIST_LIKE);
         }
 
-        likeRepository.save(createLike(request.getTargetId().getId(), user));
+        likeRepository.save(createLike(postId, user));
     }
 
     private Like createLike(Long postId, User user) {
         return Like.builder()
-                .userId(user)
+                .user(user)
                 .targetType(TargetType.POST)
                 .targetId(postId)
                 .build();
@@ -57,18 +52,18 @@ public class LikeService {
 
     // 게시판 좋아요 취소
     @Transactional
-    public void postUnLike(PostLikeRequest request) {
-        User user = userRepository.findById(request.getUser().getId())
+    public void postUnLike(Long userId, Long postId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        Post post = postRepository.findById(request.getTargetId().getId())
+        Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_POST));
 
-        if (!likeRepository.existsByUserId_IdAndTargetId(user.getId(), post.getId())) {
+        if (!likeRepository.existsByUser_IdAndTargetId(user.getId(), post.getId())) {
             throw new BusinessException(ErrorCode.NOT_EXIST_LIKE);
         }
 
-        Like like = likeRepository.findByTargetIdAndUserId_Id(post.getId(), user.getId())
+        Like like = likeRepository.findByTargetIdAndUser_Id(post.getId(), user.getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_LIKE));
 
         likeRepository.delete(like);
