@@ -3,9 +3,9 @@ package com.example.interaction.service;
 import com.example.common.enums.TargetType;
 import com.example.common.exception.BusinessException;
 import com.example.common.exception.ErrorCode;
-import com.example.domain.Post;
 import com.example.interaction.domain.Like;
 import com.example.interaction.repository.LikeRepository;
+import com.example.repository.CommentRepository;
 import com.example.repository.PostRepository;
 import com.example.user.domain.User;
 import com.example.user.repository.UserRepository;
@@ -20,52 +20,62 @@ public class LikeService {
     private final LikeRepository likeRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
 
     /*
     게시판/ 댓글 좋아요, 취소
     각 게시판 / 댓글에 대한 좋아요 수
      */
 
-    // 게시판 좋아요 등록
+    // 게시판/댓글 좋아요
     @Transactional
-    public void postLike(Long userId, Long postId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+    public void postLike(Long userId, Long targetId, TargetType targetType) {
+        User user = findUser(userId);
+        validateTargetExists(targetId, targetType);
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_POST));
-
-        if (likeRepository.existsByUser_IdAndTargetId(user.getId(), post.getId())) {
+        if (likeRepository.existsByUser_IdAndTargetId(user.getId(), targetId)) {
             throw new BusinessException(ErrorCode.ALREADY_EXIST_LIKE);
         }
 
-        likeRepository.save(createLike(postId, user));
+        likeRepository.save(createLike(targetId, user, targetType));
     }
 
-    private Like createLike(Long postId, User user) {
-        return Like.builder()
-                .user(user)
-                .targetType(TargetType.POST)
-                .targetId(postId)
-                .build();
-    }
-
-    // 게시판 좋아요 취소
+    // 게시판/댓글 좋아요 취소
     @Transactional
-    public void postUnLike(Long userId, Long postId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+    public void postUnLike(Long userId, Long targetId, TargetType targetType) {
+        User user = findUser(userId);
+        validateTargetExists(targetId, targetType);
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_POST));
-
-        if (!likeRepository.existsByUser_IdAndTargetId(user.getId(), post.getId())) {
+        if (!likeRepository.existsByUser_IdAndTargetId(user.getId(), targetId)) {
             throw new BusinessException(ErrorCode.NOT_EXIST_LIKE);
         }
 
-        Like like = likeRepository.findByTargetIdAndUser_Id(post.getId(), user.getId())
+        Like like = likeRepository.findByTargetIdAndUser_Id(targetId, user.getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_LIKE));
 
         likeRepository.delete(like);
+    }
+
+    private User findUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    private void validateTargetExists(Long targetId, TargetType targetType) {
+        if (TargetType.POST.equals(targetType)) {
+            postRepository.findById(targetId)
+                    .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_POST));
+        } else {
+            commentRepository.findById(targetId)
+                    .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_COMMENT));
+        }
+    }
+
+    private Like createLike(Long targetId, User user, TargetType targetType) {
+        return Like.builder()
+                .user(user)
+                .targetType(targetType)
+                .targetId(targetId)
+                .build();
     }
 }
