@@ -29,8 +29,25 @@ public enum ErrorCode {
     NOT_EXIST_EMAIL(HttpStatus.BAD_REQUEST, 200, "존재하지 않은 이메일입니다."),
 
     // 회원관리 관련
-    NOT_CHANGEABLE_ROLE(HttpStatus.BAD_REQUEST, 200, "권한 변경 불가합니다.")
-    ;
+    NOT_CHANGEABLE_ROLE(HttpStatus.BAD_REQUEST, 200, "권한 변경 불가합니다."),
+
+    //Board 부분
+    // 카테고리 관련
+    DUPLICATE_CATEGORY(HttpStatus.BAD_REQUEST, 200, "이미 존재하는 카테고리입니다."),
+    NOT_EXIST_CATEGORY(HttpStatus.BAD_REQUEST, 200, "존재하지 않는 카테고리입니다."),
+    ALREADY_DELETE_CATEGORY(HttpStatus.BAD_REQUEST, 200, "이미 삭제된 카테고리입니다."),
+    ALREADY_SHOW_CATEGORY(HttpStatus.BAD_REQUEST, 200, "이미 공개되어있는 카테고리입니다."),
+
+    // Post 관련
+    NOT_EXIST_POST(HttpStatus.BAD_REQUEST, 200, "존재하지 않는 게시글입니다."),
+    NOT_MATCH_WRITER(HttpStatus.BAD_REQUEST, 200, "작성자가 맞지 않습니다."),
+
+    // Notice 관련
+    DUPLICATE_NOTICE(HttpStatus.BAD_REQUEST, 200, "이미 존재하는 공지사항입니다."),
+    NOT_EXIST_NOTICE(HttpStatus.BAD_REQUEST, 200, "존재하지 않는 공지사항입니다."),
+
+    // 댓글 관련
+    NOT_EXIST_COMMENT(HttpStatus.BAD_REQUEST,200 , "존재하지 않는 댓글입니다.");
 
     private final HttpStatus httpStatus;
     private final int status;

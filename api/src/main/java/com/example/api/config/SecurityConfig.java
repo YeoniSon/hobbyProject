@@ -43,20 +43,49 @@ public class SecurityConfig {
                                 "/users/reset-password",
                                 "/users/reset-password/email-verify",
                                 "/users/reset-password/change-password",
+                                // 관리자 계정 등록
+                                "/admin/register"
+
+                        ).permitAll()
+
+                        // 프로필 조회/수정은 인증 필요
+                        .requestMatchers(
                                 "/users/deposit",
                                 "/users/withdraw",
-                                "/admin/register"
-                        ).permitAll()
-                        // 프로필 조회/수정은 인증 필요
-                        .requestMatchers("/users/profile", "/users/profile/edit").authenticated()
-                        // 그 외 /users 하위는 인증 필요
-                        .requestMatchers("/users/**").authenticated()
+                                "/users/profile",
+                                "/users/profile/edit",
+                                "/users/change-password",
+
+                                // 카테고리 등록은 인증 필요
+                                "/category/register",
+
+                                //게시글 관련
+                                "/post/upload",
+                                "/post/my-posts",
+                                "/post/{postId}/detail",
+
+                                // 댓글 관련
+                                "/comment/upload",
+                                "/comment/{userId}/all-comments",
+                                "/comment/{postId}/all-comments"
+                        ).authenticated()
 
                         // 관리자 전용 (ADMIN 역할 필요)
                         .requestMatchers(
-                                "/admin/users",
-                                "/admin/{userId}",
-                                "/admin/{userId}/role"
+                                //카테고리 관리
+                                "/category/manage/**",
+                                // 게시글 관리
+                                "/post/manage/**",
+
+                                // 계정 관리
+                                "/admin/manage/**",
+
+                                // 댓글 관리
+                                "/comment/manage/**",
+
+                                //공지사항 관리
+                                "/notice/manage/**"
+
                         ).hasRole("ADMIN")
 
                         // 나머지는 인증 필요

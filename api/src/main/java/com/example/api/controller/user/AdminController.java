@@ -19,6 +19,7 @@ public class AdminController {
 
     private final AdminService adminService;
 
+    // 관리자 등록
     @PostMapping("/register")
     public void register(
             @RequestBody SignUpRequest request
@@ -26,28 +27,32 @@ public class AdminController {
         adminService.adminRegister(request);
     }
 
-    @GetMapping("/users")
+    // 계정 전체 조회
+    @GetMapping("/manage/users")
     public ResponseEntity<List<UserDataReponse>> getAllUsers(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         return ResponseEntity.ok(adminService.getAllUsers());
     }
 
-    @GetMapping("/users-without-withdraw")
+    // 계정 삭제 처리 제외 전체 조회
+    @GetMapping("/manage/users-without-withdraw")
     public ResponseEntity<List<UserDataReponse>> getAllUsersWithoutWithdraw(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ){
         return ResponseEntity.ok(adminService.getAllUsersWithoutWithdraw());
     }
 
-    @GetMapping("/withdraw-users")
+    // 계정 삭제 처리 조회
+    @GetMapping("/manage/withdraw-users")
     public ResponseEntity<List<UserDataReponse>> getAllWithdrawUsers(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ){
         return ResponseEntity.ok(adminService.getWithdrawUsers());
     }
 
-    @GetMapping("/{userId}")
+    // 특정 계정 정보 조회
+    @GetMapping("/manage/{userId}")
     public ResponseEntity<UserDataReponse> getUserById(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long userId
@@ -55,7 +60,8 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getUserById(userId));
     }
 
-    @PatchMapping("/{userId}/role")
+    // 특정 계정 역할 변경
+    @PatchMapping("/manage/{userId}/role")
     public ResponseEntity<Void> changeRole(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long userId,
@@ -65,7 +71,8 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/{userId}/withdraw")
+    // 특정 계정 삭제처리
+    @PatchMapping("/manage/{userId}/withdraw")
     public ResponseEntity<Void> adminWithdraw(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long userId
@@ -74,7 +81,8 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/{userId}/deposit")
+    // 특정 계정 복구처리
+    @PatchMapping("/manage/{userId}/deposit")
     public ResponseEntity<Void> adminDeposit(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long userId
