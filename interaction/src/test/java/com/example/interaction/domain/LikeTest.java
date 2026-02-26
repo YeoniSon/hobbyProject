@@ -27,18 +27,18 @@ class LikeTest {
     }
 
     @Test
-    @DisplayName("빌더로 생성 시 userId, targetType, targetId가 설정된다.")
+    @DisplayName("빌더로 생성 시 user, targetType, targetId가 설정된다.")
     void builder() {
         User user = createUser();
         Long targetId = 1L;
 
         Like like = Like.builder()
-                .userId(user)
+                .user(user)
                 .targetType(TargetType.POST)
                 .targetId(targetId)
                 .build();
 
-        assertThat(like.getUserId()).isEqualTo(user);
+        assertThat(like.getUser()).isEqualTo(user);
         assertThat(like.getTargetType()).isEqualTo(TargetType.POST);
         assertThat(like.getTargetId()).isEqualTo(targetId);
     }
