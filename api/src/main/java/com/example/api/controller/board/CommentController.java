@@ -1,9 +1,13 @@
 package com.example.api.controller.board;
 
 import com.example.api.security.CustomUserDetails;
+import com.example.common.enums.TargetType;
+import com.example.common.exception.BusinessException;
+import com.example.common.exception.ErrorCode;
 import com.example.dto.request.comment.CommentEditRequest;
 import com.example.dto.request.comment.CommentUploadRequest;
 import com.example.dto.response.CommentResponse;
+import com.example.interaction.service.ReportService;
 import com.example.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +21,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommentController {
 
+    private static final int MIN_REPORTS_FOR_PRIVATE = 20;
+
     private final CommentService commentService;
+    private final ReportService reportService;
 
     // 댓글 등록
     @PostMapping("/upload")
@@ -100,12 +107,16 @@ public class CommentController {
         return ResponseEntity.ok("success");
     }
 
-    // 댓글 비공개처리
+    // 댓글 비공개처리 - 신고 20건 이상일 때만 처리
     @PatchMapping("/manage/{commentId}/private-comment")
     public ResponseEntity<String> editPrivateComment(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long commentId
-    ){
+    ) {
+        int reportCount = reportService.countForTarget(TargetType.COMMENT, commentId);
+        if (reportCount < MIN_REPORTS_FOR_PRIVATE) {
+            throw new BusinessException(ErrorCode.NOT_ENOUGH_REPORTS_FOR_PRIVATE);
+        }
         commentService.privateComment(commentId);
         return ResponseEntity.ok("success");
     }

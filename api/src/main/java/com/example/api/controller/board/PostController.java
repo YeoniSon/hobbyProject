@@ -1,9 +1,13 @@
 package com.example.api.controller.board;
 
 import com.example.api.security.CustomUserDetails;
+import com.example.common.enums.TargetType;
+import com.example.common.exception.BusinessException;
+import com.example.common.exception.ErrorCode;
 import com.example.dto.request.post.PostEditRequest;
 import com.example.dto.request.post.PostUploadRequest;
 import com.example.dto.response.PostDataResponse;
+import com.example.interaction.service.ReportService;
 import com.example.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +21,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostController {
 
+    private static final int MIN_REPORTS_FOR_PRIVATE = 20;
+
     private final PostService postService;
+    private final ReportService reportService;
 
     // 게시글 등록
     @PostMapping("/upload")
@@ -100,12 +107,16 @@ public class PostController {
         return ResponseEntity.ok(postId + "삭제 완료했습니다.");
     }
 
-    // 관리자: 게시글 삭제(비공개)
+    // 관리자: 게시글 삭제(비공개) - 신고 20건 이상일 때만 처리
     @PatchMapping("/manage/{postId}/delete")
     public ResponseEntity<String> privatePost(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long postId
     ) {
+        int reportCount = reportService.countForTarget(TargetType.POST, postId);
+        if (reportCount < MIN_REPORTS_FOR_PRIVATE) {
+            throw new BusinessException(ErrorCode.NOT_ENOUGH_REPORTS_FOR_PRIVATE);
+        }
         postService.privatePost(postId);
         return ResponseEntity.ok("게시글 삭제(비공개) success");
     }

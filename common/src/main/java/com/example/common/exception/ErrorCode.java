@@ -55,7 +55,8 @@ public enum ErrorCode {
 
     //신고 관련
     ALREADY_EXIST_REPORT(HttpStatus.BAD_REQUEST,200 ,"이미 신고했습니다."),
-    NOT_EXIST_REPORT(HttpStatus.BAD_REQUEST,200 ,"신고 내용이 없습니다.");
+    NOT_EXIST_REPORT(HttpStatus.BAD_REQUEST,200 ,"신고 내용이 없습니다."),
+    NOT_ENOUGH_REPORTS_FOR_PRIVATE(HttpStatus.BAD_REQUEST, 200, "신고가 20건 이상일 때만 비공개 처리할 수 있습니다.");
 
 
     private final HttpStatus httpStatus;
