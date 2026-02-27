@@ -6,6 +6,7 @@ import com.example.common.exception.ErrorCode;
 import com.example.domain.Comment;
 import com.example.domain.Post;
 import com.example.interaction.domain.Like;
+import com.example.interaction.dto.response.LikeDataResponse;
 import com.example.interaction.repository.LikeRepository;
 import com.example.repository.CommentRepository;
 import com.example.repository.PostRepository;
@@ -19,6 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -274,5 +276,128 @@ class LikeServiceTest {
                         .isEqualTo(ErrorCode.NOT_EXIST_COMMENT));
 
         verify(likeRepository, never()).countByTargetTypeAndTargetId(any(), anyLong());
+    }
+
+    @Test
+    @DisplayName("allLikeView - 사용자가 좋아요한 게시글 목록 조회 성공")
+    void allLikeViewPostSuccess() {
+        User user = mock(User.class);
+
+        Like like1 = Like.builder()
+                .user(user)
+                .targetType(TargetType.POST)
+                .targetId(1L)
+                .build();
+        Like like2 = Like.builder()
+                .user(user)
+                .targetType(TargetType.POST)
+                .targetId(2L)
+                .build();
+
+        when(likeRepository.findAllByUser_IdAndTargetType(1L, TargetType.POST))
+                .thenReturn(List.of(like1, like2));
+
+        Post post1 = mock(Post.class);
+        when(post1.getId()).thenReturn(1L);
+        when(post1.getTitle()).thenReturn("title1");
+        Post post2 = mock(Post.class);
+        when(post2.getId()).thenReturn(2L);
+        when(post2.getTitle()).thenReturn("title2");
+
+        when(postRepository.findById(1L)).thenReturn(Optional.of(post1));
+        when(postRepository.findById(2L)).thenReturn(Optional.of(post2));
+
+        List<LikeDataResponse> result = likeService.allLikeView(1L, TargetType.POST);
+
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getTargetId()).isEqualTo(1L);
+        assertThat(result.get(0).getTargetType()).isEqualTo(TargetType.POST);
+        assertThat(result.get(0).getTitle()).isEqualTo("title1");
+        assertThat(result.get(1).getTargetId()).isEqualTo(2L);
+        assertThat(result.get(1).getTargetType()).isEqualTo(TargetType.POST);
+        assertThat(result.get(1).getTitle()).isEqualTo("title2");
+
+        verify(likeRepository).findAllByUser_IdAndTargetType(1L, TargetType.POST);
+        verify(postRepository).findById(1L);
+        verify(postRepository).findById(2L);
+        verify(commentRepository, never()).findById(anyLong());
+    }
+
+    @Test
+    @DisplayName("allLikeView - 사용자가 좋아요한 댓글 목록 조회 성공")
+    void allLikeViewCommentSuccess() {
+        User user = mock(User.class);
+
+        Like like1 = Like.builder()
+                .user(user)
+                .targetType(TargetType.COMMENT)
+                .targetId(1L)
+                .build();
+
+        when(likeRepository.findAllByUser_IdAndTargetType(1L, TargetType.COMMENT))
+                .thenReturn(List.of(like1));
+
+        Comment comment = mock(Comment.class);
+        when(comment.getId()).thenReturn(1L);
+        when(comment.getContent()).thenReturn("content1");
+        when(commentRepository.findById(1L)).thenReturn(Optional.of(comment));
+
+        List<LikeDataResponse> result = likeService.allLikeView(1L, TargetType.COMMENT);
+
+        assertThat(result).hasSize(1);
+        LikeDataResponse data = result.get(0);
+        assertThat(data.getTargetId()).isEqualTo(1L);
+        assertThat(data.getTargetType()).isEqualTo(TargetType.COMMENT);
+        assertThat(data.getContent()).isEqualTo("content1");
+
+        verify(likeRepository).findAllByUser_IdAndTargetType(1L, TargetType.COMMENT);
+        verify(commentRepository).findById(1L);
+        verify(postRepository, never()).findById(anyLong());
+    }
+
+    @Test
+    @DisplayName("allLikeView - 게시글이 존재하지 않으면 NOT_EXIST_POST 예외")
+    void allLikeViewPostNotFound() {
+        User user = mock(User.class);
+
+        Like like = Like.builder()
+                .user(user)
+                .targetType(TargetType.POST)
+                .targetId(1L)
+                .build();
+
+        when(likeRepository.findAllByUser_IdAndTargetType(1L, TargetType.POST))
+                .thenReturn(List.of(like));
+        when(postRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> likeService.allLikeView(1L, TargetType.POST))
+                .isInstanceOf(BusinessException.class)
+                .satisfies(ex -> assertThat(((BusinessException) ex).getErrorCode())
+                        .isEqualTo(ErrorCode.NOT_EXIST_POST));
+
+        verify(commentRepository, never()).findById(anyLong());
+    }
+
+    @Test
+    @DisplayName("allLikeView - 댓글이 존재하지 않으면 NOT_EXIST_COMMENT 예외")
+    void allLikeViewCommentNotFound() {
+        User user = mock(User.class);
+
+        Like like = Like.builder()
+                .user(user)
+                .targetType(TargetType.COMMENT)
+                .targetId(1L)
+                .build();
+
+        when(likeRepository.findAllByUser_IdAndTargetType(1L, TargetType.COMMENT))
+                .thenReturn(List.of(like));
+        when(commentRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> likeService.allLikeView(1L, TargetType.COMMENT))
+                .isInstanceOf(BusinessException.class)
+                .satisfies(ex -> assertThat(((BusinessException) ex).getErrorCode())
+                        .isEqualTo(ErrorCode.NOT_EXIST_COMMENT));
+
+        verify(postRepository, never()).findById(anyLong());
     }
 }
