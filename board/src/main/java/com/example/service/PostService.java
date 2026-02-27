@@ -142,12 +142,11 @@ public class PostService {
         postRepository.delete(post);
     }
 
-    // 관리자: 게시글 삭제(비공개)
+    // 관리자: 게시글 삭제(비공개). 신고 20건 이상 여부는 API 레이어에서 검사 후 호출.
     @Transactional
     public void privatePost(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_POST));
-
         post.deleteShow();
     }
 
