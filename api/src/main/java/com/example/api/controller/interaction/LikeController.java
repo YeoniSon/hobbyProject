@@ -2,7 +2,7 @@ package com.example.api.controller.interaction;
 
 import com.example.api.security.CustomUserDetails;
 import com.example.common.enums.TargetType;
-import com.example.interaction.dto.response.CountLikeResponse;
+import com.example.interaction.dto.response.CountResponse;
 import com.example.interaction.dto.response.LikeDataResponse;
 import com.example.interaction.service.LikeService;
 import lombok.RequiredArgsConstructor;
@@ -70,7 +70,7 @@ public class LikeController {
 
     // 각 게시글 좋아요 수
     @PostMapping("/post/{postId}/count")
-    public ResponseEntity<CountLikeResponse> countPostLike(
+    public ResponseEntity<CountResponse> countPostLike(
             @PathVariable Long postId,
             @RequestParam TargetType targetType
     ) {

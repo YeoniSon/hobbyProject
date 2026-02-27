@@ -6,7 +6,7 @@ import com.example.common.exception.ErrorCode;
 import com.example.domain.Comment;
 import com.example.domain.Post;
 import com.example.interaction.domain.Like;
-import com.example.interaction.dto.response.CountLikeResponse;
+import com.example.interaction.dto.response.CountResponse;
 import com.example.interaction.dto.response.LikeDataResponse;
 import com.example.interaction.repository.LikeRepository;
 import com.example.repository.CommentRepository;
@@ -87,12 +87,12 @@ public class LikeService {
 
     // 게시판 / 댓글 별 좋아요 수
     @Transactional
-    public CountLikeResponse countLike(Long targetId, TargetType targetType) {
+    public CountResponse countLike(Long targetId, TargetType targetType) {
         validateTargetExists(targetId, targetType);
 
         int count = likeRepository.countByTargetTypeAndTargetId(targetType, targetId);
 
-        return CountLikeResponse.from(count);
+        return CountResponse.from(count);
     }
 
     // 사용자가 좋아요를 누른 게시물/댓글 전체 조회

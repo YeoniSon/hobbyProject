@@ -5,12 +5,12 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class CountLikeResponse {
+public class CountResponse {
 
     private int count;
 
-    public static CountLikeResponse from(int count) {
-        return CountLikeResponse.builder()
+    public static CountResponse from(int count) {
+        return CountResponse.builder()
                 .count(count)
                 .build();
     }
