@@ -7,6 +7,7 @@ import com.example.domain.Comment;
 import com.example.domain.Post;
 import com.example.interaction.domain.Report;
 import com.example.interaction.dto.request.ReportRequest;
+import com.example.interaction.dto.response.CountResponse;
 import com.example.interaction.dto.response.ReportResponse;
 import com.example.interaction.repository.ReportRepository;
 import com.example.repository.CommentRepository;
@@ -427,6 +428,138 @@ class ReportServiceTest {
                         .isEqualTo(ErrorCode.NOT_EXIST_REPORT));
 
         verify(reportRepository, never()).delete(any());
+    }
+
+    // ---- countAllReports ----
+    @Test
+    @DisplayName("countAllReports - 전체 신고 수 조회 성공")
+    void countAllReportsSuccess() {
+        when(reportRepository.count()).thenReturn(5L);
+
+        CountResponse result = reportService.countAllReports();
+
+        assertThat(result.getCount()).isEqualTo(5);
+        verify(reportRepository).count();
+    }
+
+    @Test
+    @DisplayName("countAllReports - 신고가 없으면 NOT_EXIST_REPORT 예외")
+    void countAllReportsEmpty() {
+        when(reportRepository.count()).thenReturn(0L);
+
+        assertThatThrownBy(() -> reportService.countAllReports())
+                .isInstanceOf(BusinessException.class)
+                .satisfies(ex -> assertThat(((BusinessException) ex).getErrorCode())
+                        .isEqualTo(ErrorCode.NOT_EXIST_REPORT));
+    }
+
+    // ---- countTargetTypeReports ----
+    @Test
+    @DisplayName("countTargetTypeReports - POST 타입 신고 수 조회")
+    void countTargetTypeReportsPost() {
+        when(reportRepository.countByTargetType(TargetType.POST)).thenReturn(3);
+
+        CountResponse result = reportService.countTargetTypeReports(TargetType.POST);
+
+        assertThat(result.getCount()).isEqualTo(3);
+        verify(reportRepository).countByTargetType(TargetType.POST);
+    }
+
+    @Test
+    @DisplayName("countTargetTypeReports - COMMENT 타입 신고 수 조회")
+    void countTargetTypeReportsComment() {
+        when(reportRepository.countByTargetType(TargetType.COMMENT)).thenReturn(2);
+
+        CountResponse result = reportService.countTargetTypeReports(TargetType.COMMENT);
+
+        assertThat(result.getCount()).isEqualTo(2);
+        verify(reportRepository).countByTargetType(TargetType.COMMENT);
+    }
+
+    // ---- countUserReports ----
+    @Test
+    @DisplayName("countUserReports - 내가 신고한 전체 수 조회 성공")
+    void countUserReportsSuccess() {
+        User user = mock(User.class);
+        when(user.getId()).thenReturn(1L);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(reportRepository.existsByUser_Id(1L)).thenReturn(true);
+        when(reportRepository.countByUser_Id(1L)).thenReturn(4);
+
+        CountResponse result = reportService.countUserReports(1L);
+
+        assertThat(result.getCount()).isEqualTo(4);
+        verify(reportRepository).countByUser_Id(1L);
+    }
+
+    @Test
+    @DisplayName("countUserReports - 존재하지 않는 유저면 USER_NOT_FOUND 예외")
+    void countUserReportsUserNotFound() {
+        when(userRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> reportService.countUserReports(999L))
+                .isInstanceOf(BusinessException.class)
+                .satisfies(ex -> assertThat(((BusinessException) ex).getErrorCode())
+                        .isEqualTo(ErrorCode.USER_NOT_FOUND));
+    }
+
+    @Test
+    @DisplayName("countUserReports - 해당 유저 신고가 없으면 NOT_EXIST_REPORT 예외")
+    void countUserReportsEmpty() {
+        User user = mock(User.class);
+        when(user.getId()).thenReturn(1L);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(reportRepository.existsByUser_Id(1L)).thenReturn(false);
+
+        assertThatThrownBy(() -> reportService.countUserReports(1L))
+                .isInstanceOf(BusinessException.class)
+                .satisfies(ex -> assertThat(((BusinessException) ex).getErrorCode())
+                        .isEqualTo(ErrorCode.NOT_EXIST_REPORT));
+
+        verify(reportRepository, never()).countByUser_Id(anyLong());
+    }
+
+    // ---- countUserTargetTypeReports ----
+    @Test
+    @DisplayName("countUserTargetTypeReports - 내가 신고한 POST 타입 수 조회 성공")
+    void countUserTargetTypeReportsSuccess() {
+        User user = mock(User.class);
+        when(user.getId()).thenReturn(1L);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(reportRepository.existsByUser_IdAndTargetType(1L, TargetType.POST)).thenReturn(true);
+        when(reportRepository.countByUser_IdAndTargetType(1L, TargetType.POST)).thenReturn(2);
+
+        CountResponse result = reportService.countUserTargetTypeReports(1L, TargetType.POST);
+
+        assertThat(result.getCount()).isEqualTo(2);
+        verify(reportRepository).countByUser_IdAndTargetType(1L, TargetType.POST);
+    }
+
+    @Test
+    @DisplayName("countUserTargetTypeReports - 존재하지 않는 유저면 USER_NOT_FOUND 예외")
+    void countUserTargetTypeReportsUserNotFound() {
+        when(userRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> reportService.countUserTargetTypeReports(999L, TargetType.POST))
+                .isInstanceOf(BusinessException.class)
+                .satisfies(ex -> assertThat(((BusinessException) ex).getErrorCode())
+                        .isEqualTo(ErrorCode.USER_NOT_FOUND));
+    }
+
+    @Test
+    @DisplayName("countUserTargetTypeReports - 해당 유저/타입 신고 없으면 NOT_EXIST_REPORT 예외")
+    void countUserTargetTypeReportsEmpty() {
+        User user = mock(User.class);
+        when(user.getId()).thenReturn(1L);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(reportRepository.existsByUser_IdAndTargetType(1L, TargetType.COMMENT)).thenReturn(false);
+
+        assertThatThrownBy(() -> reportService.countUserTargetTypeReports(1L, TargetType.COMMENT))
+                .isInstanceOf(BusinessException.class)
+                .satisfies(ex -> assertThat(((BusinessException) ex).getErrorCode())
+                        .isEqualTo(ErrorCode.NOT_EXIST_REPORT));
+
+        verify(reportRepository, never()).countByUser_IdAndTargetType(anyLong(), any());
     }
 }
 
