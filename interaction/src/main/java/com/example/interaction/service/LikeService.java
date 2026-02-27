@@ -3,7 +3,11 @@ package com.example.interaction.service;
 import com.example.common.enums.TargetType;
 import com.example.common.exception.BusinessException;
 import com.example.common.exception.ErrorCode;
+import com.example.domain.Comment;
+import com.example.domain.Post;
 import com.example.interaction.domain.Like;
+import com.example.interaction.dto.response.CountLikeResponse;
+import com.example.interaction.dto.response.LikeDataResponse;
 import com.example.interaction.repository.LikeRepository;
 import com.example.repository.CommentRepository;
 import com.example.repository.PostRepository;
@@ -12,6 +16,8 @@ import com.example.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -29,11 +35,11 @@ public class LikeService {
 
     // 게시판/댓글 좋아요
     @Transactional
-    public void postLike(Long userId, Long targetId, TargetType targetType) {
+    public void setLike(Long userId, Long targetId, TargetType targetType) {
         User user = findUser(userId);
         validateTargetExists(targetId, targetType);
 
-        if (likeRepository.existsByUser_IdAndTargetId(user.getId(), targetId)) {
+        if (likeRepository.existsByTargetTypeAndUser_IdAndTargetId(targetType, user.getId(), targetId)) {
             throw new BusinessException(ErrorCode.ALREADY_EXIST_LIKE);
         }
 
@@ -42,15 +48,15 @@ public class LikeService {
 
     // 게시판/댓글 좋아요 취소
     @Transactional
-    public void postUnLike(Long userId, Long targetId, TargetType targetType) {
+    public void setUnLike(Long userId, Long targetId, TargetType targetType) {
         User user = findUser(userId);
         validateTargetExists(targetId, targetType);
 
-        if (!likeRepository.existsByUser_IdAndTargetId(user.getId(), targetId)) {
+        if (!likeRepository.existsByTargetTypeAndUser_IdAndTargetId(targetType, user.getId(), targetId)) {
             throw new BusinessException(ErrorCode.NOT_EXIST_LIKE);
         }
 
-        Like like = likeRepository.findByTargetIdAndUser_Id(targetId, user.getId())
+        Like like = likeRepository.findByTargetTypeAndTargetIdAndUser_Id(targetType, targetId, user.getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_LIKE));
 
         likeRepository.delete(like);
@@ -77,5 +83,39 @@ public class LikeService {
                 .targetType(targetType)
                 .targetId(targetId)
                 .build();
+    }
+
+    // 게시판 / 댓글 별 좋아요 수
+    @Transactional
+    public CountLikeResponse countLike(Long targetId, TargetType targetType) {
+        validateTargetExists(targetId, targetType);
+
+        int count = likeRepository.countByTargetTypeAndTargetId(targetType, targetId);
+
+        return CountLikeResponse.from(count);
+    }
+
+    // 사용자가 좋아요를 누른 게시물/댓글 전체 조회
+    @Transactional(readOnly = true)
+    public List<LikeDataResponse> allLikeView(Long userId, TargetType targetType) {
+        List<Like> likes = likeRepository.findAllByUser_IdAndTargetType(userId, targetType);
+
+        if (TargetType.POST.equals(targetType)) {
+            return likes.stream()
+                    .map(like -> {
+                        Post post = postRepository.findById(like.getTargetId())
+                                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_POST));
+                        return LikeDataResponse.fromPost(post);
+                    })
+                    .toList();
+        } else {
+            return likes.stream()
+                    .map(like -> {
+                        Comment comment = commentRepository.findById(like.getTargetId())
+                                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_COMMENT));
+                        return LikeDataResponse.fromComment(comment);
+                    })
+                    .toList();
+        }
     }
 }
