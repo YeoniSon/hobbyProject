@@ -164,12 +164,11 @@ public class CommentService {
         commentRepository.delete(comment);
     }
 
-    //댓글 비공개
-    public void privateComment(Long commentId){
+    // 댓글 비공개. 신고 20건 이상 여부는 API 레이어에서 검사 후 호출.
+    @Transactional
+    public void privateComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_COMMENT));
-
-
         comment.deleteShow();
     }
 

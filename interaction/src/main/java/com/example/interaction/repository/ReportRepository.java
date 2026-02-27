@@ -18,7 +18,9 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
     boolean existsByUser_IdAndTargetType(Long userId, TargetType targetType);
 
     int countByTargetType(TargetType targetType);
-    int countByTargetId(Long targetId);
     int countByUser_Id(Long userId);
     int countByUser_IdAndTargetType(Long userId, TargetType targetType);
+
+    // 특정 글에 대한 신고 수
+    int countByTargetTypeAndTargetId(TargetType targetType, Long targetId);
 }

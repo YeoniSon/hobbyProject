@@ -561,5 +561,39 @@ class ReportServiceTest {
 
         verify(reportRepository, never()).countByUser_IdAndTargetType(anyLong(), any());
     }
+
+    // ---- countForTarget (비공개 처리 조건 판단용) ----
+    @Test
+    @DisplayName("countForTarget - POST 대상 신고 건수 조회")
+    void countForTargetPost() {
+        when(reportRepository.countByTargetTypeAndTargetId(TargetType.POST, 10L)).thenReturn(25);
+
+        int result = reportService.countForTarget(TargetType.POST, 10L);
+
+        assertThat(result).isEqualTo(25);
+        verify(reportRepository).countByTargetTypeAndTargetId(TargetType.POST, 10L);
+    }
+
+    @Test
+    @DisplayName("countForTarget - COMMENT 대상 신고 건수 조회")
+    void countForTargetComment() {
+        when(reportRepository.countByTargetTypeAndTargetId(TargetType.COMMENT, 5L)).thenReturn(20);
+
+        int result = reportService.countForTarget(TargetType.COMMENT, 5L);
+
+        assertThat(result).isEqualTo(20);
+        verify(reportRepository).countByTargetTypeAndTargetId(TargetType.COMMENT, 5L);
+    }
+
+    @Test
+    @DisplayName("countForTarget - 신고 없으면 0 반환")
+    void countForTargetZero() {
+        when(reportRepository.countByTargetTypeAndTargetId(TargetType.POST, 1L)).thenReturn(0);
+
+        int result = reportService.countForTarget(TargetType.POST, 1L);
+
+        assertThat(result).isEqualTo(0);
+        verify(reportRepository).countByTargetTypeAndTargetId(TargetType.POST, 1L);
+    }
 }
 

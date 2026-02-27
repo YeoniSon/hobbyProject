@@ -226,4 +226,12 @@ public class ReportService {
         }
         return CountResponse.from(reportRepository.countByUser_IdAndTargetType(user.getId(), targetType));
     }
+
+    /**
+     * 특정 대상(게시글/댓글)에 대한 신고 건수. API 레이어에서 비공개 처리 조건(예: 20건 이상) 판단용.
+     */
+    @Transactional(readOnly = true)
+    public int countForTarget(TargetType targetType, Long targetId) {
+        return reportRepository.countByTargetTypeAndTargetId(targetType, targetId);
+    }
 }
