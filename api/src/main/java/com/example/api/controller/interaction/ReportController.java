@@ -91,4 +91,14 @@ public class ReportController {
     }
 
 
+    //신고 취소
+    @PutMapping("/delete/{reportId}")
+    public ResponseEntity<String> deleteReport(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long reportId
+    ) {
+        reportService.deleteReport(reportId);
+        return ResponseEntity.ok("delete report success");
+    }
+
 }

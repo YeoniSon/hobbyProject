@@ -178,4 +178,13 @@ public class ReportService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_REPORT));
         return toReportResponse(report);
     }
+
+    // 신고 취소
+    @Transactional
+    public void deleteReport(Long reportId) {
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_REPORT));
+
+        reportRepository.delete(report);
+    }
 }
