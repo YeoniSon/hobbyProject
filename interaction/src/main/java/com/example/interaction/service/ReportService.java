@@ -7,6 +7,7 @@ import com.example.domain.Comment;
 import com.example.domain.Post;
 import com.example.interaction.domain.Report;
 import com.example.interaction.dto.request.ReportRequest;
+import com.example.interaction.dto.response.CountResponse;
 import com.example.interaction.dto.response.ReportResponse;
 import com.example.interaction.repository.ReportRepository;
 import com.example.repository.CommentRepository;
@@ -186,5 +187,43 @@ public class ReportService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_REPORT));
 
         reportRepository.delete(report);
+    }
+
+    // 전체 신고 수 -> 관리자 (JpaRepository.count() 사용)
+    @Transactional(readOnly = true)
+    public CountResponse countAllReports() {
+        long count = reportRepository.count();
+        if (count == 0) {
+            throw new BusinessException(ErrorCode.NOT_EXIST_REPORT);
+        }
+        return CountResponse.from((int) count);
+    }
+
+    // targetType 별 신고수 -> 관리자
+    @Transactional(readOnly = true)
+    public CountResponse countTargetTypeReports(TargetType targetType) {
+        return CountResponse.from(reportRepository.countByTargetType(targetType));
+    }
+
+    // 내가 신고한 전체 수 -> 회원
+    @Transactional(readOnly = true)
+    public CountResponse countUserReports(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        if (!reportRepository.existsByUser_Id(user.getId())) {
+            throw new BusinessException(ErrorCode.NOT_EXIST_REPORT);
+        }
+        return CountResponse.from(reportRepository.countByUser_Id(user.getId()));
+    }
+
+    // 내가 신고한 targetType 별 수 -> 회원
+    @Transactional(readOnly = true)
+    public CountResponse countUserTargetTypeReports(Long userId, TargetType targetType) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        if (!reportRepository.existsByUser_IdAndTargetType(user.getId(), targetType)) {
+            throw new BusinessException(ErrorCode.NOT_EXIST_REPORT);
+        }
+        return CountResponse.from(reportRepository.countByUser_IdAndTargetType(user.getId(), targetType));
     }
 }

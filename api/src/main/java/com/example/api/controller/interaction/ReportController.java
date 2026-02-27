@@ -3,6 +3,7 @@ package com.example.api.controller.interaction;
 import com.example.api.security.CustomUserDetails;
 import com.example.common.enums.TargetType;
 import com.example.interaction.dto.request.ReportRequest;
+import com.example.interaction.dto.response.CountResponse;
 import com.example.interaction.dto.response.ReportResponse;
 import com.example.interaction.service.ReportService;
 import lombok.RequiredArgsConstructor;
@@ -101,4 +102,51 @@ public class ReportController {
         return ResponseEntity.ok("delete report success");
     }
 
+    // 전체 신고 수
+    @GetMapping("/manage/count/all")
+    public ResponseEntity<CountResponse> getCountAllReports(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        return ResponseEntity.ok(reportService.countAllReports());
+    }
+
+    // targetType post 신고 수
+    @GetMapping("/manage/count/post")
+    public ResponseEntity<CountResponse> getCountPostReports(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        return ResponseEntity.ok(reportService.countTargetTypeReports(TargetType.POST));
+    }
+
+    // targetType comment 신고 수
+    @GetMapping("/manage/count/comment")
+    public ResponseEntity<CountResponse> getCountCommentReports(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ){
+        return ResponseEntity.ok(reportService.countTargetTypeReports(TargetType.COMMENT));
+    }
+
+    // 유저가 신고한 전체 수
+    @GetMapping("/count/all")
+    public ResponseEntity<CountResponse> getCountAllUserReports(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ){
+        return ResponseEntity.ok(reportService.countUserReports(userDetails.getId()));
+    }
+
+    // 유저가 신고한 targetType post 수
+    @GetMapping("/count/post")
+    public ResponseEntity<CountResponse> getCountPostUserReports(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        return ResponseEntity.ok(reportService.countUserTargetTypeReports(userDetails.getId(), TargetType.POST));
+    }
+
+    // 유저가 신고한 targetType Comment 수
+    @GetMapping("/count/comment")
+    public ResponseEntity<CountResponse> getCountCommentUserReports(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        return ResponseEntity.ok(reportService.countUserTargetTypeReports(userDetails.getId(), TargetType.COMMENT));
+    }
 }

@@ -77,7 +77,8 @@ public class SecurityConfig {
                                 "/report/comment/{commentId}",
                                 "/report/all-reports",
                                 "/report/details/{reportId}",
-                                "/report/delete/{reportId}"
+                                "/report/delete/{reportId}",
+                                "/report/count/**"
                         ).authenticated()
 
                         // 관리자 전용 (ADMIN 역할 필요)
