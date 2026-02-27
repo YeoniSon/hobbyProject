@@ -74,7 +74,9 @@ public class SecurityConfig {
 
                                 // 신고 관련
                                 "/report/post/{postId}",
-                                "/report/comment/{commentId}"
+                                "/report/comment/{commentId}",
+                                "/report/all-reports",
+                                "/report/details/{reportId}"
                         ).authenticated()
 
                         // 관리자 전용 (ADMIN 역할 필요)
