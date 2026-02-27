@@ -396,5 +396,37 @@ class ReportServiceTest {
                 .satisfies(ex -> assertThat(((BusinessException) ex).getErrorCode())
                         .isEqualTo(ErrorCode.NOT_EXIST_REPORT));
     }
+
+    // ---- deleteReport (신고 취소) ----
+    @Test
+    @DisplayName("deleteReport - 신고 취소 성공")
+    void deleteReportSuccess() {
+        User user = mock(User.class);
+        Report report = Report.builder()
+                .user(user)
+                .targetType(TargetType.POST)
+                .targetId(10L)
+                .reason("사유")
+                .build();
+        when(reportRepository.findById(1L)).thenReturn(Optional.of(report));
+
+        reportService.deleteReport(1L);
+
+        verify(reportRepository).findById(1L);
+        verify(reportRepository).delete(report);
+    }
+
+    @Test
+    @DisplayName("deleteReport - 존재하지 않는 신고면 NOT_EXIST_REPORT 예외")
+    void deleteReportNotFound() {
+        when(reportRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> reportService.deleteReport(999L))
+                .isInstanceOf(BusinessException.class)
+                .satisfies(ex -> assertThat(((BusinessException) ex).getErrorCode())
+                        .isEqualTo(ErrorCode.NOT_EXIST_REPORT));
+
+        verify(reportRepository, never()).delete(any());
+    }
 }
 
