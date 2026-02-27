@@ -46,14 +46,14 @@ class LikeServiceTest {
 
     @Test
     @DisplayName("postLike - 게시글 좋아요 등록 성공")
-    void postLikeSuccess() {
+    void setLikeSuccess() {
         User user = mock(User.class);
         when(user.getId()).thenReturn(1L);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(postRepository.findById(1L)).thenReturn(Optional.of(mock(Post.class)));
-        when(likeRepository.existsByUser_IdAndTargetId(1L, 1L)).thenReturn(false);
+        when(likeRepository.existsByTargetTypeAndUser_IdAndTargetId(TargetType.POST, 1L, 1L)).thenReturn(false);
 
-        likeService.postLike(1L, 1L, TargetType.POST);
+        likeService.setLike(1L, 1L, TargetType.POST);
 
         ArgumentCaptor<Like> captor = ArgumentCaptor.forClass(Like.class);
         verify(likeRepository).save(captor.capture());
@@ -61,15 +61,15 @@ class LikeServiceTest {
         assertThat(saved.getTargetType()).isEqualTo(TargetType.POST);
         assertThat(saved.getTargetId()).isEqualTo(1L);
         assertThat(saved.getUser()).isEqualTo(user);
-        verify(likeRepository).existsByUser_IdAndTargetId(1L, 1L);
+        verify(likeRepository).existsByTargetTypeAndUser_IdAndTargetId(TargetType.POST, 1L, 1L);
     }
 
     @Test
     @DisplayName("postLike - 존재하지 않는 사용자면 USER_NOT_FOUND 예외")
-    void postLikeUserNotFound() {
+    void setLikeUserNotFound() {
         when(userRepository.findById(999L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> likeService.postLike(999L, 1L, TargetType.POST))
+        assertThatThrownBy(() -> likeService.setLike(999L, 1L, TargetType.POST))
                 .isInstanceOf(BusinessException.class)
                 .satisfies(ex -> assertThat(((BusinessException) ex).getErrorCode())
                         .isEqualTo(ErrorCode.USER_NOT_FOUND));
@@ -80,12 +80,12 @@ class LikeServiceTest {
 
     @Test
     @DisplayName("postLike - 존재하지 않는 게시글이면 NOT_EXIST_POST 예외")
-    void postLikePostNotFound() {
+    void postLikeSetNotFound() {
         User user = mock(User.class);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(postRepository.findById(999L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> likeService.postLike(1L, 999L, TargetType.POST))
+        assertThatThrownBy(() -> likeService.setLike(1L, 999L, TargetType.POST))
                 .isInstanceOf(BusinessException.class)
                 .satisfies(ex -> assertThat(((BusinessException) ex).getErrorCode())
                         .isEqualTo(ErrorCode.NOT_EXIST_POST));
@@ -100,9 +100,9 @@ class LikeServiceTest {
         when(user.getId()).thenReturn(1L);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(commentRepository.findById(1L)).thenReturn(Optional.of(mock(Comment.class)));
-        when(likeRepository.existsByUser_IdAndTargetId(1L, 1L)).thenReturn(false);
+        when(likeRepository.existsByTargetTypeAndUser_IdAndTargetId(TargetType.COMMENT, 1L, 1L)).thenReturn(false);
 
-        likeService.postLike(1L, 1L, TargetType.COMMENT);
+        likeService.setLike(1L, 1L, TargetType.COMMENT);
 
         ArgumentCaptor<Like> captor = ArgumentCaptor.forClass(Like.class);
         verify(likeRepository).save(captor.capture());
@@ -121,7 +121,7 @@ class LikeServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(commentRepository.findById(999L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> likeService.postLike(1L, 999L, TargetType.COMMENT))
+        assertThatThrownBy(() -> likeService.setLike(1L, 999L, TargetType.COMMENT))
                 .isInstanceOf(BusinessException.class)
                 .satisfies(ex -> assertThat(((BusinessException) ex).getErrorCode())
                         .isEqualTo(ErrorCode.NOT_EXIST_COMMENT));
@@ -131,14 +131,14 @@ class LikeServiceTest {
 
     @Test
     @DisplayName("postLike - 이미 좋아요 했으면 ALREADY_EXIST_LIKE 예외")
-    void postLikeAlreadyExist() {
+    void setLikeAlreadyExist() {
         User user = mock(User.class);
         when(user.getId()).thenReturn(1L);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(postRepository.findById(1L)).thenReturn(Optional.of(mock(Post.class)));
-        when(likeRepository.existsByUser_IdAndTargetId(1L, 1L)).thenReturn(true);
+        when(likeRepository.existsByTargetTypeAndUser_IdAndTargetId(TargetType.POST, 1L, 1L)).thenReturn(true);
 
-        assertThatThrownBy(() -> likeService.postLike(1L, 1L, TargetType.POST))
+        assertThatThrownBy(() -> likeService.setLike(1L, 1L, TargetType.POST))
                 .isInstanceOf(BusinessException.class)
                 .satisfies(ex -> assertThat(((BusinessException) ex).getErrorCode())
                         .isEqualTo(ErrorCode.ALREADY_EXIST_LIKE));
@@ -148,7 +148,7 @@ class LikeServiceTest {
 
     @Test
     @DisplayName("postUnLike - 좋아요 취소 성공")
-    void postUnLikeSuccess() {
+    void setUnLikeSuccess() {
         User user = mock(User.class);
         when(user.getId()).thenReturn(1L);
         Like like = Like.builder()
@@ -158,12 +158,12 @@ class LikeServiceTest {
                 .build();
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(postRepository.findById(1L)).thenReturn(Optional.of(mock(Post.class)));
-        when(likeRepository.existsByUser_IdAndTargetId(1L, 1L)).thenReturn(true);
-        when(likeRepository.findByTargetIdAndUser_Id(1L, 1L)).thenReturn(Optional.of(like));
+        when(likeRepository.existsByTargetTypeAndUser_IdAndTargetId(TargetType.POST, 1L, 1L)).thenReturn(true);
+        when(likeRepository.findByTargetTypeAndTargetIdAndUser_Id(TargetType.POST, 1L, 1L)).thenReturn(Optional.of(like));
 
-        likeService.postUnLike(1L, 1L, TargetType.POST);
+        likeService.setUnLike(1L, 1L, TargetType.POST);
 
-        verify(likeRepository).findByTargetIdAndUser_Id(1L, 1L);
+        verify(likeRepository).findByTargetTypeAndTargetIdAndUser_Id(TargetType.POST, 1L, 1L);
         verify(likeRepository).delete(like);
     }
 
@@ -179,12 +179,12 @@ class LikeServiceTest {
                 .build();
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(commentRepository.findById(1L)).thenReturn(Optional.of(mock(Comment.class)));
-        when(likeRepository.existsByUser_IdAndTargetId(1L, 1L)).thenReturn(true);
-        when(likeRepository.findByTargetIdAndUser_Id(1L, 1L)).thenReturn(Optional.of(like));
+        when(likeRepository.existsByTargetTypeAndUser_IdAndTargetId(TargetType.COMMENT, 1L, 1L)).thenReturn(true);
+        when(likeRepository.findByTargetTypeAndTargetIdAndUser_Id(TargetType.COMMENT, 1L, 1L)).thenReturn(Optional.of(like));
 
-        likeService.postUnLike(1L, 1L, TargetType.COMMENT);
+        likeService.setUnLike(1L, 1L, TargetType.COMMENT);
 
-        verify(likeRepository).findByTargetIdAndUser_Id(1L, 1L);
+        verify(likeRepository).findByTargetTypeAndTargetIdAndUser_Id(TargetType.COMMENT, 1L, 1L);
         verify(likeRepository).delete(like);
         verify(commentRepository).findById(1L);
         verify(postRepository, never()).findById(anyLong());
@@ -192,10 +192,10 @@ class LikeServiceTest {
 
     @Test
     @DisplayName("postUnLike - 존재하지 않는 사용자면 USER_NOT_FOUND 예외")
-    void postUnLikeUserNotFound() {
+    void setUnLikeUserNotFound() {
         when(userRepository.findById(999L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> likeService.postUnLike(999L, 1L, TargetType.POST))
+        assertThatThrownBy(() -> likeService.setUnLike(999L, 1L, TargetType.POST))
                 .isInstanceOf(BusinessException.class)
                 .satisfies(ex -> assertThat(((BusinessException) ex).getErrorCode())
                         .isEqualTo(ErrorCode.USER_NOT_FOUND));
@@ -205,12 +205,12 @@ class LikeServiceTest {
 
     @Test
     @DisplayName("postUnLike - 존재하지 않는 게시글이면 NOT_EXIST_POST 예외")
-    void postUnLikePostNotFound() {
+    void postUnLikeSetNotFound() {
         User user = mock(User.class);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(postRepository.findById(999L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> likeService.postUnLike(1L, 999L, TargetType.POST))
+        assertThatThrownBy(() -> likeService.setUnLike(1L, 999L, TargetType.POST))
                 .isInstanceOf(BusinessException.class)
                 .satisfies(ex -> assertThat(((BusinessException) ex).getErrorCode())
                         .isEqualTo(ErrorCode.NOT_EXIST_POST));
@@ -225,7 +225,7 @@ class LikeServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(commentRepository.findById(999L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> likeService.postUnLike(1L, 999L, TargetType.COMMENT))
+        assertThatThrownBy(() -> likeService.setUnLike(1L, 999L, TargetType.COMMENT))
                 .isInstanceOf(BusinessException.class)
                 .satisfies(ex -> assertThat(((BusinessException) ex).getErrorCode())
                         .isEqualTo(ErrorCode.NOT_EXIST_COMMENT));
@@ -235,19 +235,44 @@ class LikeServiceTest {
 
     @Test
     @DisplayName("postUnLike - 좋아요가 없으면 NOT_EXIST_LIKE 예외")
-    void postUnLikeNotExistLike() {
+    void setUnLikeNotExistLike() {
         User user = mock(User.class);
         when(user.getId()).thenReturn(1L);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(postRepository.findById(1L)).thenReturn(Optional.of(mock(Post.class)));
-        when(likeRepository.existsByUser_IdAndTargetId(1L, 1L)).thenReturn(false);
+        when(likeRepository.existsByTargetTypeAndUser_IdAndTargetId(TargetType.POST, 1L, 1L)).thenReturn(false);
 
-        assertThatThrownBy(() -> likeService.postUnLike(1L, 1L, TargetType.POST))
+        assertThatThrownBy(() -> likeService.setUnLike(1L, 1L, TargetType.POST))
                 .isInstanceOf(BusinessException.class)
                 .satisfies(ex -> assertThat(((BusinessException) ex).getErrorCode())
                         .isEqualTo(ErrorCode.NOT_EXIST_LIKE));
 
-        verify(likeRepository, never()).findByTargetIdAndUser_Id(anyLong(), anyLong());
+        verify(likeRepository, never()).findByTargetTypeAndTargetIdAndUser_Id(any(), anyLong(), anyLong());
         verify(likeRepository, never()).delete(any());
+    }
+
+    @Test
+    @DisplayName("countLike - 게시글 좋아요 수 조회 성공")
+    void countPostLikeSuccess() {
+        when(postRepository.findById(1L)).thenReturn(Optional.of(mock(Post.class)));
+        when(likeRepository.countByTargetTypeAndTargetId(TargetType.POST, 1L)).thenReturn(3);
+
+        var response = likeService.countLike(1L, TargetType.POST);
+
+        assertThat(response.getCount()).isEqualTo(3);
+        verify(likeRepository).countByTargetTypeAndTargetId(TargetType.POST, 1L);
+    }
+
+    @Test
+    @DisplayName("countLike - 존재하지 않는 댓글이면 NOT_EXIST_COMMENT 예외")
+    void countCommentLikeNotFound() {
+        when(commentRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> likeService.countLike(999L, TargetType.COMMENT))
+                .isInstanceOf(BusinessException.class)
+                .satisfies(ex -> assertThat(((BusinessException) ex).getErrorCode())
+                        .isEqualTo(ErrorCode.NOT_EXIST_COMMENT));
+
+        verify(likeRepository, never()).countByTargetTypeAndTargetId(any(), anyLong());
     }
 }
