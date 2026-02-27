@@ -2,6 +2,7 @@ package com.example.api.controller.interaction;
 
 import com.example.api.security.CustomUserDetails;
 import com.example.common.enums.TargetType;
+import com.example.interaction.dto.response.CountLikeResponse;
 import com.example.interaction.service.LikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class LikeController {
             @PathVariable Long postId,
             @RequestParam TargetType targetType
     ) {
-        likeService.postLike(userDetails.getId(), postId, targetType);
+        likeService.setLike(userDetails.getId(), postId, targetType);
         return ResponseEntity.ok("좋아요 success");
     }
 
@@ -38,7 +39,7 @@ public class LikeController {
             @PathVariable Long postId,
             @RequestParam TargetType targetType
     ) {
-        likeService.postUnLike(userDetails.getId(), postId, targetType);
+        likeService.setUnLike(userDetails.getId(), postId, targetType);
         return ResponseEntity.ok("좋아요 취소 success");
     }
 
@@ -49,7 +50,7 @@ public class LikeController {
             @PathVariable Long commentId,
             @RequestParam TargetType targetType
     ){
-        likeService.postLike(userDetails.getId(), commentId, targetType);
+        likeService.setLike(userDetails.getId(), commentId, targetType);
         return ResponseEntity.ok("comment like success");
     }
 
@@ -60,8 +61,16 @@ public class LikeController {
             @PathVariable Long commentId,
             @RequestParam TargetType targetType
     ) {
-        likeService.postUnLike(userDetails.getId(), commentId, targetType);
+        likeService.setUnLike(userDetails.getId(), commentId, targetType);
         return ResponseEntity.ok("comment unlike success");
     }
 
+    // 각 게시글 좋아요 수
+    @PostMapping("/post/{postId}/count")
+    public ResponseEntity<CountLikeResponse> countPostLike(
+            @PathVariable Long postId,
+            @RequestParam TargetType targetType
+    ) {
+        return ResponseEntity.ok(likeService.countLike(postId, targetType));
+    }
 }

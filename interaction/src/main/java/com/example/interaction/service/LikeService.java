@@ -4,6 +4,7 @@ import com.example.common.enums.TargetType;
 import com.example.common.exception.BusinessException;
 import com.example.common.exception.ErrorCode;
 import com.example.interaction.domain.Like;
+import com.example.interaction.dto.response.CountLikeResponse;
 import com.example.interaction.repository.LikeRepository;
 import com.example.repository.CommentRepository;
 import com.example.repository.PostRepository;
@@ -29,11 +30,11 @@ public class LikeService {
 
     // 게시판/댓글 좋아요
     @Transactional
-    public void postLike(Long userId, Long targetId, TargetType targetType) {
+    public void setLike(Long userId, Long targetId, TargetType targetType) {
         User user = findUser(userId);
         validateTargetExists(targetId, targetType);
 
-        if (likeRepository.existsByUser_IdAndTargetId(user.getId(), targetId)) {
+        if (likeRepository.existsByTargetTypeAndUser_IdAndTargetId(targetType, user.getId(), targetId)) {
             throw new BusinessException(ErrorCode.ALREADY_EXIST_LIKE);
         }
 
@@ -42,15 +43,15 @@ public class LikeService {
 
     // 게시판/댓글 좋아요 취소
     @Transactional
-    public void postUnLike(Long userId, Long targetId, TargetType targetType) {
+    public void setUnLike(Long userId, Long targetId, TargetType targetType) {
         User user = findUser(userId);
         validateTargetExists(targetId, targetType);
 
-        if (!likeRepository.existsByUser_IdAndTargetId(user.getId(), targetId)) {
+        if (!likeRepository.existsByTargetTypeAndUser_IdAndTargetId(targetType, user.getId(), targetId)) {
             throw new BusinessException(ErrorCode.NOT_EXIST_LIKE);
         }
 
-        Like like = likeRepository.findByTargetIdAndUser_Id(targetId, user.getId())
+        Like like = likeRepository.findByTargetTypeAndTargetIdAndUser_Id(targetType, targetId, user.getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_LIKE));
 
         likeRepository.delete(like);
@@ -77,5 +78,15 @@ public class LikeService {
                 .targetType(targetType)
                 .targetId(targetId)
                 .build();
+    }
+
+    // 게시판 / 댓글 별 좋아요 수
+    @Transactional
+    public CountLikeResponse countLike(Long targetId, TargetType targetType) {
+        validateTargetExists(targetId, targetType);
+
+        int count = likeRepository.countByTargetTypeAndTargetId(targetType, targetId);
+
+        return CountLikeResponse.from(count);
     }
 }
