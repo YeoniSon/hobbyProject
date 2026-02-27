@@ -51,7 +51,10 @@ public enum ErrorCode {
 
     // 좋아요 관련
     ALREADY_EXIST_LIKE(HttpStatus.BAD_REQUEST,200, "이미 좋아요를 눌렀습니다."),
-    NOT_EXIST_LIKE(HttpStatus.BAD_REQUEST, 200, "좋아요가 없습니다.");
+    NOT_EXIST_LIKE(HttpStatus.BAD_REQUEST, 200, "좋아요가 없습니다."),
+
+    //신고 관련
+    ALREADY_EXIST_REPORT(HttpStatus.BAD_REQUEST,200 ,"이미 신고했습니다.");
 
 
     private final HttpStatus httpStatus;
