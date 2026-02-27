@@ -70,7 +70,11 @@ public class SecurityConfig {
                                 "/comment/{postId}/all-comments",
 
                                 // 좋아요 관련
-                                "/like/**"
+                                "/like/**",
+
+                                // 신고 관련
+                                "/report/post/{postId}",
+                                "/report/comment/{commentId}"
                         ).authenticated()
 
                         // 관리자 전용 (ADMIN 역할 필요)
@@ -87,7 +91,10 @@ public class SecurityConfig {
                                 "/comment/manage/**",
 
                                 //공지사항 관리
-                                "/notice/manage/**"
+                                "/notice/manage/**",
+
+                                //신고 관리
+                                "/report/manage/**"
 
                         ).hasRole("ADMIN")
 
