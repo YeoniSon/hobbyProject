@@ -10,14 +10,6 @@
 - 장르별 게시판(추가 / 삭제)
 - 공지사항
 - 알림센터
----
-
-### 사이트맵
-![img.png](images/img.png)
-
----
-### 테이블 정리
-![tableImage.png](images/tableImage.png)
 
 ---
 ### ERD
