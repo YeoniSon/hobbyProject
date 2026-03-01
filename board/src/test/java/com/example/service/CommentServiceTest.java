@@ -1,15 +1,16 @@
 package com.example.service;
 
+import com.example.board.service.CommentService;
 import com.example.common.exception.BusinessException;
 import com.example.common.exception.ErrorCode;
-import com.example.domain.Category;
-import com.example.domain.Comment;
-import com.example.domain.Post;
-import com.example.dto.request.comment.CommentEditRequest;
-import com.example.dto.request.comment.CommentUploadRequest;
-import com.example.dto.response.CommentResponse;
-import com.example.repository.CommentRepository;
-import com.example.repository.PostRepository;
+import com.example.board.domain.Category;
+import com.example.board.domain.Comment;
+import com.example.board.domain.Post;
+import com.example.board.dto.request.comment.CommentEditRequest;
+import com.example.board.dto.request.comment.CommentUploadRequest;
+import com.example.board.dto.response.CommentResponse;
+import com.example.board.repository.CommentRepository;
+import com.example.board.repository.PostRepository;
 import com.example.user.domain.User;
 import com.example.user.repository.UserRepository;
 import com.example.common.enums.Role;

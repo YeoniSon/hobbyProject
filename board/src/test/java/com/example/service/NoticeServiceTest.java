@@ -1,12 +1,13 @@
 package com.example.service;
 
+import com.example.board.service.NoticeService;
 import com.example.common.exception.BusinessException;
 import com.example.common.exception.ErrorCode;
-import com.example.domain.Notice;
-import com.example.dto.request.notice.NoticeEditRequest;
-import com.example.dto.request.notice.NoticeUploadRequest;
-import com.example.dto.response.NoticeResponse;
-import com.example.repository.NoticeRepository;
+import com.example.board.domain.Notice;
+import com.example.board.dto.request.notice.NoticeEditRequest;
+import com.example.board.dto.request.notice.NoticeUploadRequest;
+import com.example.board.dto.response.NoticeResponse;
+import com.example.board.repository.NoticeRepository;
 import com.example.user.domain.User;
 import com.example.user.repository.UserRepository;
 import com.example.common.enums.Role;

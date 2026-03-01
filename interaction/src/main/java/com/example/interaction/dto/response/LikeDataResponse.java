@@ -2,8 +2,8 @@ package com.example.interaction.dto.response;
 
 
 import com.example.common.enums.TargetType;
-import com.example.domain.Comment;
-import com.example.domain.Post;
+import com.example.board.domain.Comment;
+import com.example.board.domain.Post;
 import lombok.Builder;
 import lombok.Getter;
 

@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 public abstract class BaseShowEntity extends BaseEntity {
 
-    @Column(nullable = false)
+    @Column(name = "visible", nullable = false)
     private boolean show = true;
 
     public void deleteShow() {

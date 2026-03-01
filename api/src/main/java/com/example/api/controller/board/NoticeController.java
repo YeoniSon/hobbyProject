@@ -1,10 +1,10 @@
 package com.example.api.controller.board;
 
 import com.example.api.security.CustomUserDetails;
-import com.example.dto.request.notice.NoticeEditRequest;
-import com.example.dto.request.notice.NoticeUploadRequest;
-import com.example.dto.response.NoticeResponse;
-import com.example.service.NoticeService;
+import com.example.board.dto.request.notice.NoticeEditRequest;
+import com.example.board.dto.request.notice.NoticeUploadRequest;
+import com.example.board.dto.response.NoticeResponse;
+import com.example.board.service.NoticeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
