@@ -5,7 +5,7 @@ import com.example.common.enums.TargetType;
 import com.example.common.exception.BusinessException;
 import com.example.common.exception.ErrorCode;
 import com.example.interaction.service.ReportService;
-import com.example.service.PostService;
+import com.example.board.service.PostService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

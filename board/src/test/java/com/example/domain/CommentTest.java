@@ -1,5 +1,8 @@
 package com.example.domain;
 
+import com.example.board.domain.Category;
+import com.example.board.domain.Comment;
+import com.example.board.domain.Post;
 import com.example.user.domain.User;
 import com.example.common.enums.Role;
 import org.junit.jupiter.api.DisplayName;

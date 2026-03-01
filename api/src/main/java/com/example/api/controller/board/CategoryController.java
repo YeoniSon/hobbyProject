@@ -1,9 +1,9 @@
 package com.example.api.controller.board;
 
 import com.example.api.security.CustomUserDetails;
-import com.example.dto.request.CategoryRegisterRequest;
-import com.example.dto.response.CategoryResponse;
-import com.example.service.CategoryService;
+import com.example.board.dto.request.CategoryRegisterRequest;
+import com.example.board.dto.response.CategoryResponse;
+import com.example.board.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

@@ -1,10 +1,11 @@
 package com.example.service;
 
+import com.example.board.service.CategoryService;
 import com.example.common.exception.BusinessException;
 import com.example.common.exception.ErrorCode;
-import com.example.domain.Category;
-import com.example.dto.request.CategoryRegisterRequest;
-import com.example.repository.CategoryRepository;
+import com.example.board.domain.Category;
+import com.example.board.dto.request.CategoryRegisterRequest;
+import com.example.board.repository.CategoryRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

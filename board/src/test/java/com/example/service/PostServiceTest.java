@@ -1,14 +1,15 @@
 package com.example.service;
 
+import com.example.board.service.PostService;
 import com.example.common.exception.BusinessException;
 import com.example.common.exception.ErrorCode;
-import com.example.domain.Category;
-import com.example.domain.Post;
-import com.example.dto.request.post.PostEditRequest;
-import com.example.dto.request.post.PostUploadRequest;
-import com.example.dto.response.PostDataResponse;
-import com.example.repository.CategoryRepository;
-import com.example.repository.PostRepository;
+import com.example.board.domain.Category;
+import com.example.board.domain.Post;
+import com.example.board.dto.request.post.PostEditRequest;
+import com.example.board.dto.request.post.PostUploadRequest;
+import com.example.board.dto.response.PostDataResponse;
+import com.example.board.repository.CategoryRepository;
+import com.example.board.repository.PostRepository;
 import com.example.user.domain.User;
 import com.example.user.repository.UserRepository;
 import com.example.common.enums.Role;

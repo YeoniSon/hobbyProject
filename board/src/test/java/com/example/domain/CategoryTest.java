@@ -1,5 +1,6 @@
 package com.example.domain;
 
+import com.example.board.domain.Category;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
