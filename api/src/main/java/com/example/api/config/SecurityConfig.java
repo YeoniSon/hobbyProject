@@ -35,6 +35,8 @@ public class SecurityConfig {
 								"/swagger-ui.html",
                                 // h2-console 접근 허용
 								"/h2-console/**",
+                                // WebSocket 핸드셰이크 (토큰은 쿼리로 검증)
+                                "/ws", "/ws/**",
                                 // 회원가입·이메일 인증·로그인만 비인증 허용
                                 "/users/signup",
                                 "/users/email-verify",
@@ -78,7 +80,10 @@ public class SecurityConfig {
                                 "/report/all-reports",
                                 "/report/details/{reportId}",
                                 "/report/delete/{reportId}",
-                                "/report/count/**"
+                                "/report/count/**",
+
+                                // 채팅 관련
+                                "/chat/**"
                         ).authenticated()
 
                         // 관리자 전용 (ADMIN 역할 필요)

@@ -60,7 +60,9 @@ public enum ErrorCode {
     
     // Chat 관련
     INVALID_REQUEST_CHAT_ROOM(HttpStatus.BAD_REQUEST, 200, "채팅 상대가 존재하지 않습니다."),
-    NOT_EXIST_ROOM(HttpStatus.BAD_REQUEST,200 , "채팅방이 존재하지 않습니다.");
+    NOT_EXIST_ROOM(HttpStatus.BAD_REQUEST,200 , "채팅방이 존재하지 않습니다."),
+    NOT_EXIST_MESSAGE(HttpStatus.BAD_REQUEST, 200, "메시지가 존재하지 않습니다."),
+    MESSAGE_DELETE_TIME_EXPIRED(HttpStatus.BAD_REQUEST, 200, "메시지는 전송 후 10분 이내에만 삭제할 수 있습니다.");
 
 
     private final HttpStatus httpStatus;

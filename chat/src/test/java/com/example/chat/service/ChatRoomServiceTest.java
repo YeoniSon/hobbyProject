@@ -346,4 +346,39 @@ class ChatRoomServiceTest {
                 .satisfies(ex -> assertThat(((BusinessException) ex).getErrorCode())
                         .isEqualTo(ErrorCode.NOT_EXIST_ROOM));
     }
+
+    // ---- getOtherMemberUsername ----
+    @Test
+    @DisplayName("getOtherMemberUsername - 상대방 이메일 반환")
+    void getOtherMemberUsernameSuccess() {
+        Long roomId = 10L;
+        Long myUserId = 1L;
+        ChatRoom room = mock(ChatRoom.class);
+        User me = mock(User.class);
+        when(me.getId()).thenReturn(1L);
+        User other = mock(User.class);
+        when(other.getId()).thenReturn(2L);
+        when(other.getEmail()).thenReturn("other@test.com");
+        ChatRoomMember memberMe = mock(ChatRoomMember.class);
+        ChatRoomMember memberOther = mock(ChatRoomMember.class);
+        when(memberMe.getUser()).thenReturn(me);
+        when(memberOther.getUser()).thenReturn(other);
+        when(room.getMembers()).thenReturn(List.of(memberMe, memberOther));
+        when(chatRoomRepository.findById(roomId)).thenReturn(Optional.of(room));
+
+        var result = chatRoomService.getOtherMemberUsername(roomId, myUserId);
+
+        assertThat(result).isPresent();
+        assertThat(result.get()).isEqualTo("other@test.com");
+    }
+
+    @Test
+    @DisplayName("getOtherMemberUsername - 방 없으면 empty")
+    void getOtherMemberUsernameRoomNotFound() {
+        when(chatRoomRepository.findById(999L)).thenReturn(Optional.empty());
+
+        var result = chatRoomService.getOtherMemberUsername(999L, 1L);
+
+        assertThat(result).isEmpty();
+    }
 }

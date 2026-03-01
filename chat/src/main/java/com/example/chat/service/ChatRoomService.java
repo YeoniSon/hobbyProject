@@ -116,4 +116,16 @@ public class ChatRoomService {
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXIST_ROOM));
     member.rejoin();
   }
+
+  /** 1:1 방에서 상대방의 이메일(Principal name) 반환. WebSocket convertAndSendToUser용 */
+  @Transactional
+  public java.util.Optional<String> getOtherMemberUsername(Long roomId, Long excludeUserId) {
+    ChatRoom room = chatRoomRepository.findById(roomId).orElse(null);
+    if (room == null) return java.util.Optional.empty();
+    return room.getMembers().stream()
+        .map(ChatRoomMember::getUser)
+        .filter(u -> !u.getId().equals(excludeUserId))
+        .findFirst()
+        .map(User::getEmail);
+  }
 }
