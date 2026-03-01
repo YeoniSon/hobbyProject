@@ -3,8 +3,6 @@ package com.example.user.dto.response;
 import com.example.user.domain.User;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.CodePointBuffer;
 
 import java.time.LocalDate;
 
