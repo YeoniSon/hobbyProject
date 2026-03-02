@@ -10,6 +10,39 @@
 
 단순한 기능 구현을 넘어 멀티 모듈 구조를 통한 계층 분리, WebSocket을 활용한 실시간성 확보, 그리고 다형성 설계를 통한 유연한 데이터 구조 구축에 집중했습니다.
 
+## 🛠 Tech Stack
+Backend Core
+- Language: Java 17
+
+- Framework: Spring Boot 3.2.x
+
+- Build Tool: Gradle (Multi-Module Management)
+
+- Database: MySQL 8.0 (Production), H2 (Test/Local)
+
+- ORM: Spring Data JPA
+
+Messaging & Real-time
+- Protocol: WebSocket (STOMP)
+
+- Library: spring-boot-starter-websocket
+
+- Features: Pub/Sub 기반 실시간 1:1 채팅, 채팅방 세션 관리
+
+Security & Auth
+- Security: Spring Security 6.x
+
+- Authentication: JWT (jjwt 0.12.3)
+
+- Features: Custom JWT Filter, 인증 기반 API 접근 제어, BCrypt 패스워드 암호화
+
+Documentation & Test
+- API Doc: OpenAPI 3 (Swagger UI / springdoc-openapi 2.2.0)
+
+- Test: JUnit5, AssertJ
+
+- Lombok: 보일러플레이트 코드 제거 및 생산성 향상
+
 ## 🏗 System Architecture (Multi-Module)
 
 계층별 책임 분리와 모듈 간 결합도 완화를 위해 프로젝트를 독립적인 모듈로 분리하여 관리합니다.
