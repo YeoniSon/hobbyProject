@@ -22,7 +22,7 @@ public class SwaggerConfig {
 
         return new OpenAPI()
                 .info(new Info()
-                        .title("HabitProject API")
+                        .title("HobbyProject API")
                         .description("취미 플랫폼 (개인 프로젝트) API")
                         .version("1.0"))
                 .components(new Components()
