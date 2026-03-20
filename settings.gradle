@@ -1,4 +1,4 @@
-rootProject.name = 'habitProject'
+rootProject.name = 'hobbyProject'
 
 include 'common'  // 공통 모듈
 include 'user' // 인증 / 회원 모듈
