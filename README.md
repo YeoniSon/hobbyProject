@@ -43,6 +43,16 @@ Documentation & Test
 
 - Lombok: 보일러플레이트 코드 제거 및 생산성 향상
 
+Infrastructure & Deployment
+- Dockerize
+  - `Dockerfile`로 `api` 컨테이너화(포트 `8080`)
+- Run (MySQL + API)
+  - `docker-compose.yml`로 `mysql` + `api` 동시 실행
+  - `api`에 `DB_USERNAME`, `DB_PASSWORD` env 주입 필요 (`DB_URL`은 기본값 사용 가능)
+```bash
+docker compose up -d --build
+```
+- Test: H2 그대로 사용 (`api/src/test/resources/application.properties`)
 ## 🏗 System Architecture (Multi-Module)
 
 계층별 책임 분리와 모듈 간 결합도 완화를 위해 프로젝트를 독립적인 모듈로 분리하여 관리합니다.
@@ -144,10 +154,3 @@ Documentation & Test
 
 </details>
 
-
-## 📈 Future Roadmap
-- [ ] 서버 확장 시 세션 공유를 위한 Redis Pub/Sub 도입
-
-- [ ] QueryDSL 도입을 통한 복잡한 동적 쿼리 최적화
-
-- [ ] GitHub Actions를 활용한 CI/CD 자동화 구축
