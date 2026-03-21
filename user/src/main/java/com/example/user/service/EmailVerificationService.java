@@ -23,7 +23,7 @@ public class EmailVerificationService {
     private final MailService mailService;
 
     @Transactional
-    public void sendVerificationEmail(User user) {
+    public String sendVerificationEmail(User user) {
 
         AuthToken token = createEmailVerifyToken(user);
         authTokenRepository.save(token);
@@ -36,6 +36,8 @@ public class EmailVerificationService {
                 + "<p><a href=\"" + link + "\"> 인증하기 </a>를 눌러 가입을 완료하세요.</p>";
 
         mailService.sendMail(user.getEmail(), subject, text);
+        // API 응답에는 전체 URL이 아니라 토큰 값만 전달 (메일 본문 링크는 그대로)
+        return token.getToken();
     }
 
     private AuthToken createEmailVerifyToken(User user) {

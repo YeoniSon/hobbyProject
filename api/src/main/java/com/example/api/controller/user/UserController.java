@@ -6,6 +6,7 @@ import com.example.user.dto.request.changePassword.ChangePasswordRequest;
 import com.example.user.dto.request.changePassword.ChangeResetPasswordRequest;
 import com.example.user.dto.request.changePassword.ResetPasswordRequest;
 import com.example.user.dto.response.LoginResponse;
+import com.example.user.dto.response.SignupResponse;
 import com.example.user.dto.response.UserDataReponse;
 import com.example.user.service.EmailVerificationService;
 import com.example.user.service.LoginService;
@@ -26,8 +27,8 @@ public class UserController {
 
     // 회원가입
     @PostMapping("/signup")
-    public void signUp(@RequestBody SignUpRequest request) {
-        userService.signUp(request);
+    public ResponseEntity<SignupResponse> signUp(@RequestBody SignUpRequest request) {
+        return ResponseEntity.ok(userService.signUp(request));
     }
 
     //이메일 인증

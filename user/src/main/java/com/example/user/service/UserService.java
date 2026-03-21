@@ -8,6 +8,7 @@ import com.example.user.domain.AuthToken;
 import com.example.user.domain.User;
 import com.example.user.dto.request.SignUpRequest;
 import com.example.user.dto.request.UpdateUserRequest;
+import com.example.user.dto.response.SignupResponse;
 import com.example.user.dto.response.UserDataReponse;
 import com.example.user.repository.AuthTokenRepository;
 import com.example.user.repository.UserRepository;
@@ -31,13 +32,15 @@ public class UserService {
     회원가입 로직 구현
      */
     @Transactional
-    public void signUp(SignUpRequest request) {
+    public SignupResponse signUp(SignUpRequest request) {
         validateEmail(request.getEmail());
 
         User user = createUser(request);
         userRepository.save(user);
 
-        emailVerificationService.sendVerificationEmail(user);
+        String token = emailVerificationService.sendVerificationEmail(user);
+
+        return SignupResponse.of(token);
     }
 
     private void validateEmail(String email) {
