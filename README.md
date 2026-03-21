@@ -154,3 +154,12 @@ docker compose up -d --build
 
 </details>
 
+---
+
+## 🖥️ 시연영상(Gif)
+
+    
+
+- docker 실행
+    
+    ![제목 없음.gif](attachment:c0edf67d-dfaf-4106-94d5-b0181934d204:제목_없음.gif)
