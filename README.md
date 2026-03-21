@@ -157,9 +157,15 @@ docker compose up -d --build
 ---
 
 ## 🖥️ 시연영상(Gif)
+- Swagger Api
+  ![swagger api.gif](assert/swagger%20api.gif)
 
-    
-
-- docker 실행
-    
-    ![제목 없음.gif](attachment:c0edf67d-dfaf-4106-94d5-b0181934d204:제목_없음.gif)
+- 로그인, JWT
+![login, jwt.gif](assert/login%2C%20jwt.gif)
+- 게시글 업로드, 불러오기
+![getBoard.gif](assert/getBoard.gif)
+![uploadBoard.gif](assert/uploadBoard.gif)
+- 실시간 채팅
+![liveChat.gif](assert/liveChat.gif)
+- Docker
+  ![docker.gif](assert/docker.gif)
