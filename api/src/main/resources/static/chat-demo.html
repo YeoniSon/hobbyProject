@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>채팅 WebSocket 데모 (STOMP)</title>
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 520px; margin: 24px auto; padding: 0 16px; }
+    label { display: block; margin-top: 12px; font-weight: 600; font-size: 13px; }
+    input, button, textarea { width: 100%; box-sizing: border-box; margin-top: 4px; padding: 8px; }
+    textarea { min-height: 120px; font-family: monospace; font-size: 12px; }
+    .row { display: flex; gap: 8px; }
+    .row button { width: auto; flex: 1; }
+    .hint { font-size: 12px; color: #555; margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <h1>실시간 채팅 데모</h1>
+  <p class="hint">
+    JWT·roomId 입력 → 연결 → 창 두 개(서로 다른 유저 토큰)로 주고받기 테스트.
+  </p>
+
+  <label>API 베이스 URL</label>
+  <input id="baseUrl" type="text" value="http://localhost:8080" />
+
+  <label>Access Token (로그인 응답, Bearer 제외)</label>
+  <input id="token" type="text" placeholder="eyJ..." autocomplete="off" />
+
+  <label>roomId</label>
+  <input id="roomId" type="number" placeholder="1" />
+
+  <div class="row" style="margin-top: 12px;">
+    <button type="button" id="btnConnect">연결</button>
+    <button type="button" id="btnDisconnect">끊기</button>
+  </div>
+
+  <label>받은 메시지</label>
+  <textarea id="log" readonly></textarea>
+
+  <label>보낼 내용</label>
+  <input id="msg" type="text" placeholder="안녕" />
+  <button type="button" id="btnSend" style="margin-top: 8px;">전송</button>
+
+  <script>
+    (function () {
+      var stompClient = null;
+      function logLine(s) {
+        var el = document.getElementById('log');
+        el.value += new Date().toLocaleTimeString() + ' ' + s + '\n';
+        el.scrollTop = el.scrollHeight;
+      }
+      document.getElementById('btnConnect').onclick = function () {
+        var base = document.getElementById('baseUrl').value.replace(/\/$/, '');
+        var token = document.getElementById('token').value.trim();
+        if (!token) { alert('토큰을 입력하세요.'); return; }
+        var url = base + '/ws?token=' + encodeURIComponent(token);
+        var socket = new SockJS(url);
+        stompClient = Stomp.over(socket);
+        stompClient.debug = null;
+        stompClient.connect({}, function () {
+          logLine('STOMP 연결됨. /user/queue/chat 구독');
+          stompClient.subscribe('/user/queue/chat', function (m) {
+            try {
+              var o = JSON.parse(m.body);
+              var who = o.senderNickname || ('user#' + o.senderId);
+              logLine('수신: ' + who + ': ' + (o.content != null ? o.content : m.body));
+            } catch (e) {
+              logLine('수신: ' + m.body);
+            }
+          });
+        }, function (err) {
+          logLine('연결 실패: ' + err);
+        });
+      };
+      document.getElementById('btnDisconnect').onclick = function () {
+        if (stompClient) {
+          stompClient.disconnect();
+          stompClient = null;
+          logLine('연결 종료');
+        }
+      };
+      document.getElementById('btnSend').onclick = function () {
+        if (!stompClient || !stompClient.connected) {
+          alert('먼저 연결하세요.');
+          return;
+        }
+        var roomId = document.getElementById('roomId').value.trim();
+        if (!roomId) { alert('roomId 입력'); return; }
+        var content = document.getElementById('msg').value;
+        stompClient.send('/app/chat/rooms/' + roomId + '/send', {}, JSON.stringify({ content: content }));
+        logLine('송신: ' + content);
+      };
+    })();
+  </script>
+</body>
+</html>
