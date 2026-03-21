@@ -88,6 +88,7 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/v3/api-docs.yaml",
                                 "/swagger-ui.html",
+                                "/chat-demo.html",
                                 "/webjars/**",
                                 "/h2-console/**",
                                 "/ws", "/ws/**"
