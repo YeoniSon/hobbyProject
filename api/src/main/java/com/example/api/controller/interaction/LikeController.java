@@ -5,6 +5,7 @@ import com.example.common.enums.TargetType;
 import com.example.interaction.dto.response.CountResponse;
 import com.example.interaction.dto.response.LikeDataResponse;
 import com.example.interaction.service.LikeService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/like")
+@SecurityRequirement(name = "JWTAuth")
 @RequiredArgsConstructor
 public class LikeController {
 

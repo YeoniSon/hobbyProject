@@ -9,6 +9,7 @@ import com.example.board.dto.request.comment.CommentUploadRequest;
 import com.example.board.dto.response.CommentResponse;
 import com.example.interaction.service.ReportService;
 import com.example.board.service.CommentService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/comment")
+@SecurityRequirement(name = "JWTAuth")
 @RequiredArgsConstructor
 public class CommentController {
 

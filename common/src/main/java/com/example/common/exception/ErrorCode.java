@@ -18,6 +18,8 @@ public enum ErrorCode {
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 존재하는 이메일입니다."),
     DUPLICATE_PHONE(HttpStatus.CONFLICT, "이미 존재하는 전화번호입니다."),
     DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "이미 존재하는 닉네임입니다."),
+    /** DB 유니크 제약 등 (사전 검증·동시 가입 레이스 등) */
+    DUPLICATE_DATA(HttpStatus.CONFLICT, "이미 사용 중인 값입니다."),
     NO_CHANGE(HttpStatus.BAD_REQUEST, "수정할 내용이 기존 정보와 동일합니다."),
     //로그인
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),

@@ -6,10 +6,13 @@ import com.example.user.dto.request.changePassword.ChangePasswordRequest;
 import com.example.user.dto.request.changePassword.ChangeResetPasswordRequest;
 import com.example.user.dto.request.changePassword.ResetPasswordRequest;
 import com.example.user.dto.response.LoginResponse;
+import com.example.user.dto.response.SignupResponse;
 import com.example.user.dto.response.UserDataReponse;
 import com.example.user.service.EmailVerificationService;
 import com.example.user.service.LoginService;
 import com.example.user.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,12 +28,14 @@ public class UserController {
     private final EmailVerificationService emailVerificationService;
 
     // 회원가입
+    @Operation(security = {})
     @PostMapping("/signup")
-    public void signUp(@RequestBody SignUpRequest request) {
-        userService.signUp(request);
+    public ResponseEntity<SignupResponse> signUp(@RequestBody SignUpRequest request) {
+        return ResponseEntity.ok(userService.signUp(request));
     }
 
     //이메일 인증
+    @Operation(security = {})
     @GetMapping("/email-verify")
     public ResponseEntity<Void> verifyEmail(@RequestParam String token) {
         emailVerificationService.verifyToken(token);
@@ -39,6 +44,7 @@ public class UserController {
     }
 
     // 로그인
+    @Operation(security = {})
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(
             @RequestBody LoginRequest request) {
@@ -50,6 +56,7 @@ public class UserController {
     }
 
     // 회원정보 가져오기
+    @Operation(security = @SecurityRequirement(name = "JWTAuth"))
     @GetMapping("/profile")
     public ResponseEntity<UserDataReponse> getUserInfo(
             @AuthenticationPrincipal CustomUserDetails userDetails
@@ -58,6 +65,7 @@ public class UserController {
     }
 
     // 회원 정보 수정
+    @Operation(security = @SecurityRequirement(name = "JWTAuth"))
     @PatchMapping("/profile/edit")
     public ResponseEntity<UserDataReponse> updateUserInfo(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -71,6 +79,7 @@ public class UserController {
     로그인 되어있는 경우 -> 변경가능
     안되어있는 경우 -> 토큰으로 인증 후 비밀번호 리셋, 변경
      */
+    @Operation(security = @SecurityRequirement(name = "JWTAuth"))
     @PatchMapping("/change-password")
     public ResponseEntity<Void> changePassword(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -87,6 +96,7 @@ public class UserController {
     }
 
     // 비밀번호 리셋
+    @Operation(security = {})
     @PostMapping("/reset-password")
     public ResponseEntity<Void> resetPassword(
             @RequestBody ResetPasswordRequest request
@@ -96,6 +106,7 @@ public class UserController {
     }
 
     // 비밀번호 리셋 인증 (메일 링크 클릭 시 토큰 검증)
+    @Operation(security = {})
     @PostMapping("/reset-password/email-verify")
     public ResponseEntity<Void> passwordVerifyEmail(
             @RequestParam String token
@@ -105,6 +116,7 @@ public class UserController {
     }
 
     // 비밀번호 변경(로그인 x)
+    @Operation(security = {})
     @PostMapping("/reset-password/change-password")
     public ResponseEntity<Void> changeResetPassword(
             @RequestBody ChangeResetPasswordRequest request
@@ -119,6 +131,7 @@ public class UserController {
     }
 
     //회원 탈퇴
+    @Operation(security = @SecurityRequirement(name = "JWTAuth"))
     @PatchMapping("/withdraw")
     public ResponseEntity<Void> withdraw(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -133,6 +146,7 @@ public class UserController {
     }
 
     // 계정 복구
+    @Operation(security = @SecurityRequirement(name = "JWTAuth"))
     @PatchMapping("/deposit")
     public ResponseEntity<Void> deposit(
             @RequestBody DepositRequest requset

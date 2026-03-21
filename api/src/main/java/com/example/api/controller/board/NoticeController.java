@@ -5,6 +5,7 @@ import com.example.board.dto.request.notice.NoticeEditRequest;
 import com.example.board.dto.request.notice.NoticeUploadRequest;
 import com.example.board.dto.response.NoticeResponse;
 import com.example.board.service.NoticeService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/notice/manage")
+@SecurityRequirement(name = "JWTAuth")
 @RequiredArgsConstructor
 public class NoticeController {
 

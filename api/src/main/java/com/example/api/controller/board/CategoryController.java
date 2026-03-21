@@ -4,6 +4,7 @@ import com.example.api.security.CustomUserDetails;
 import com.example.board.dto.request.CategoryRegisterRequest;
 import com.example.board.dto.response.CategoryResponse;
 import com.example.board.service.CategoryService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/category")
+@SecurityRequirement(name = "JWTAuth")
 @RequiredArgsConstructor
 public class CategoryController {
     
