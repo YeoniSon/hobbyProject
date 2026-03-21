@@ -3,111 +3,122 @@ package com.example.api.config;
 import com.example.api.security.jwt.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.CorsUtils;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
-        http
-                // RESET API니까 CSRF 비활성화
-                .csrf(csrf -> csrf.disable())
-				// H2 콘솔용 frame 허용
-				.headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration c = new CorsConfiguration();
+        c.setAllowedOriginPatterns(List.of("*"));
+        c.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"));
+        c.setAllowedHeaders(List.of("*"));
+        c.setExposedHeaders(List.of("Authorization"));
+        c.setAllowCredentials(false);
+        c.setMaxAge(3600L);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", c);
+        return source;
+    }
 
-                //기본 로그인 폼 비활성화
+    /**
+     * 회원가입·로그인 등: 이 체인이 먼저 매칭되면 JWT 필터 없이 전부 permitAll.
+     * authorizeHttpRequests 만으로는 403 이 나는 환경 대응.
+     */
+    @Bean
+    @Order(Ordered.HIGHEST_PRECEDENCE)
+    public SecurityFilterChain fullyPublicApiChain(
+            HttpSecurity http,
+            CorsConfigurationSource corsConfigurationSource) throws Exception {
+        http.securityMatcher(PathWithinApplicationRequestMatchers.fullyPublicPathMatcher());
+        http.csrf(csrf -> csrf.disable());
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource));
+        http.headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
+        http.formLogin(form -> form.disable());
+        http.httpBasic(basic -> basic.disable());
+        http.sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+        return http.build();
+    }
+
+    @Bean
+    @Order(100)
+    public SecurityFilterChain filterChain(
+            HttpSecurity http,
+            JwtAuthenticationFilter jwtAuthenticationFilter,
+            CorsConfigurationSource corsConfigurationSource) throws Exception {
+        var authPatchUser = PathWithinApplicationRequestMatchers.matching(HttpMethod.PATCH,
+                "/users/deposit",
+                "/users/withdraw",
+                "/users/profile/edit",
+                "/users/change-password");
+        var authGetProfile = PathWithinApplicationRequestMatchers.matching(HttpMethod.GET,
+                "/users/profile");
+
+        http
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
+                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
                 .formLogin(formLogin -> formLogin.disable())
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                //허용 범위
                 .authorizeHttpRequests(auth -> auth
-                        // swagger 전부 오픈
+                        .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
                                 "/swagger-ui/**",
+                                "/v3/api-docs",
                                 "/v3/api-docs/**",
-								"/swagger-ui.html",
-                                // h2-console 접근 허용
-								"/h2-console/**",
-                                // WebSocket 핸드셰이크 (토큰은 쿼리로 검증)
-                                "/ws", "/ws/**",
-                                // 회원가입·이메일 인증·로그인만 비인증 허용
-                                "/users/signup",
-                                "/users/email-verify",
-                                "/users/login",
-                                // 비밀번호 재설정(로그인 없이 접근)
-                                "/users/reset-password",
-                                "/users/reset-password/email-verify",
-                                "/users/reset-password/change-password",
-                                // 관리자 계정 등록
-                                "/admin/register"
-
+                                "/v3/api-docs.yaml",
+                                "/swagger-ui.html",
+                                "/webjars/**",
+                                "/h2-console/**",
+                                "/ws", "/ws/**"
                         ).permitAll()
-
-                        // 프로필 조회/수정은 인증 필요
+                        .requestMatchers(authPatchUser).authenticated()
+                        .requestMatchers(authGetProfile).authenticated()
                         .requestMatchers(
-                                "/users/deposit",
-                                "/users/withdraw",
-                                "/users/profile",
-                                "/users/profile/edit",
-                                "/users/change-password",
-
-                                // 카테고리 등록은 인증 필요
                                 "/category/register",
-
-                                //게시글 관련
                                 "/post/upload",
                                 "/post/my-posts",
                                 "/post/{postId}/detail",
-
-                                // 댓글 관련
                                 "/comment/upload",
                                 "/comment/{userId}/all-comments",
                                 "/comment/{postId}/all-comments",
-
-                                // 좋아요 관련
                                 "/like/**",
-
-                                // 신고 관련
                                 "/report/post/{postId}",
                                 "/report/comment/{commentId}",
                                 "/report/all-reports",
                                 "/report/details/{reportId}",
                                 "/report/delete/{reportId}",
                                 "/report/count/**",
-
-                                // 채팅 관련
                                 "/chat/**"
                         ).authenticated()
-
-                        // 관리자 전용 (ADMIN 역할 필요)
                         .requestMatchers(
-                                //카테고리 관리
                                 "/category/manage/**",
-                                // 게시글 관리
                                 "/post/manage/**",
-
-                                // 계정 관리
                                 "/admin/manage/**",
-
-                                // 댓글 관리
                                 "/comment/manage/**",
-
-                                //공지사항 관리
                                 "/notice/manage/**",
-
-                                //신고 관리
                                 "/report/manage/**"
-
                         ).hasRole("ADMIN")
-
-                        // 나머지는 인증 필요
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter,

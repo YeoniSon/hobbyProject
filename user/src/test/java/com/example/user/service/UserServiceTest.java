@@ -69,6 +69,8 @@ class UserServiceTest {
                 "exist@test.com", "닉네임", "이름", "010-1111-2222", "password", LocalDate.of(1990, 1, 1)
         );
         when(userRepository.existsByEmail(request.getEmail())).thenReturn(true);
+        when(userRepository.existsByPhone(anyString())).thenReturn(false);
+        when(userRepository.existsByNickname(anyString())).thenReturn(false);
 
         assertThatThrownBy(() -> userService.signUp(request))
                 .isInstanceOf(BusinessException.class)
@@ -85,12 +87,47 @@ class UserServiceTest {
                 "new@test.com", "닉네임", "이름", "010-1111-2222", "password", LocalDate.of(1990, 1, 1)
         );
         when(userRepository.existsByEmail(request.getEmail())).thenReturn(false);
+        when(userRepository.existsByPhone(request.getPhone())).thenReturn(false);
+        when(userRepository.existsByNickname(request.getNickname())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
 
         userService.signUp(request);
 
         verify(userRepository).save(any(User.class));
         verify(emailVerificationService).sendVerificationEmail(any(User.class));
+    }
+
+    @Test
+    @DisplayName("signUp - 전화번호 중복이면 DUPLICATE_PHONE 예외")
+    void signUp_duplicatePhone_throws() {
+        SignUpRequest request = new SignUpRequest(
+                "new@test.com", "닉네임", "이름", "010-1234-1234", "password", LocalDate.of(1990, 1, 1)
+        );
+        when(userRepository.existsByEmail(request.getEmail())).thenReturn(false);
+        when(userRepository.existsByPhone(request.getPhone())).thenReturn(true);
+
+        assertThatThrownBy(() -> userService.signUp(request))
+                .isInstanceOf(BusinessException.class)
+                .satisfies(ex -> assertThat(((BusinessException) ex).getErrorCode()).isEqualTo(ErrorCode.DUPLICATE_PHONE));
+
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("signUp - 닉네임 중복이면 DUPLICATE_NICKNAME 예외")
+    void signUp_duplicateNickname_throws() {
+        SignUpRequest request = new SignUpRequest(
+                "new@test.com", "중복닉", "이름", "010-9999-8888", "password", LocalDate.of(1990, 1, 1)
+        );
+        when(userRepository.existsByEmail(request.getEmail())).thenReturn(false);
+        when(userRepository.existsByPhone(request.getPhone())).thenReturn(false);
+        when(userRepository.existsByNickname(request.getNickname())).thenReturn(true);
+
+        assertThatThrownBy(() -> userService.signUp(request))
+                .isInstanceOf(BusinessException.class)
+                .satisfies(ex -> assertThat(((BusinessException) ex).getErrorCode()).isEqualTo(ErrorCode.DUPLICATE_NICKNAME));
+
+        verify(userRepository, never()).save(any());
     }
 
     @Test

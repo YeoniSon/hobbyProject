@@ -9,6 +9,7 @@ import com.example.board.dto.request.post.PostUploadRequest;
 import com.example.board.dto.response.PostDataResponse;
 import com.example.interaction.service.ReportService;
 import com.example.board.service.PostService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/post")
+@SecurityRequirement(name = "JWTAuth")
 @RequiredArgsConstructor
 public class PostController {
 

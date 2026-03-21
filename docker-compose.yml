@@ -36,10 +36,10 @@ services:
     env_file:
       - .env
     environment:
-      # MySQL connection (Spring expects DB_URL/DB_USERNAME/DB_PASSWORD)
-      DB_URL: jdbc:mysql://mysql:${MYSQL_PORT:-3306}/${MYSQL_DATABASE}
-      DB_USERNAME: ${MYSQL_USER}
-      DB_PASSWORD: ${MYSQL_PASSWORD}
+      # 기존 DB 볼륨과 엔티티 불일치 시 validate 실패 방지 (application-docker.properties)
+      SPRING_PROFILES_ACTIVE: docker
+      # 컨테이너 간: mysql 서비스는 항상 내부 3306 (MYSQL_PORT 는 호스트 바인딩용이므로 여기서 쓰지 않음)
+      DB_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE}?allowPublicKeyRetrieval=true&useSSL=false
     restart: unless-stopped
 
 volumes:

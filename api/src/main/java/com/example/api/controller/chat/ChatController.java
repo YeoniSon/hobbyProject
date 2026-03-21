@@ -8,6 +8,7 @@ import com.example.chat.dto.response.ChatRoomListItemResponse;
 import com.example.chat.dto.response.ChatRoomResponse;
 import com.example.chat.service.ChatMessageService;
 import com.example.chat.service.ChatRoomService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/chat")
+@SecurityRequirement(name = "JWTAuth")
 @RequiredArgsConstructor
 public class ChatController {
 

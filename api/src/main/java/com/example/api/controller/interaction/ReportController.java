@@ -6,6 +6,7 @@ import com.example.interaction.dto.request.ReportRequest;
 import com.example.interaction.dto.response.CountResponse;
 import com.example.interaction.dto.response.ReportResponse;
 import com.example.interaction.service.ReportService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/report")
+@SecurityRequirement(name = "JWTAuth")
 @RequiredArgsConstructor
 public class ReportController {
     private final ReportService reportService;
