@@ -1,0 +1,28 @@
+# Secrets / environment
+.env
+**/.env
+*.env
+
+# Compose files (can contain defaults/secrets)
+docker-compose*.yml
+docker-compose*.yaml
+
+# VCS / local artifacts
+.git
+.github
+*.iml
+.idea
+build
+**/build
+.gradle
+gradle
+.classpath
+.project
+.settings
+*.log
+# Gradle:
+# - gradle/ (캐시 등)는 제외
+# - 하지만 wrapper는 필요하므로 gradle/wrapper/** 는 반드시 포함
+gradle
+!gradle/wrapper/
+!gradle/wrapper/**

@@ -8,7 +8,9 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - "${MYSQL_PORT:-3306}:3306"
+      # 로컬 개발에서는 localhost(127.0.0.1)로만 DB 접근 허용.
+      # AWS 배포 시에도 MySQL 포트가 외부에 노출되지 않게 하기 위함.
+      - "${MYSQL_BIND_ADDRESS:-127.0.0.1}:${MYSQL_PORT:-3306}:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     command: --default-authentication-plugin=mysql_native_password
@@ -32,7 +34,7 @@ services:
       mysql:
         condition: service_healthy
     ports:
-      - "8080:8080"
+      - "80:8080"
     env_file:
       - .env
     environment:
