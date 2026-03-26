@@ -1,45 +1,15 @@
-# EC2(AWS) 등: 소스/Dockerfile 없이 Hub의 api 이미지만 받아서 돌릴 때
+# EC2 + RDS: Hub 이미지만 pull 해서 API만 실행
 # 사용: docker compose -f docker-compose.prod.yml pull && docker compose -f docker-compose.prod.yml up -d
-# .env 에 DOCKERHUB_USERNAME 필수. MySQL 포트는 base와 같이 MYSQL_BIND_ADDRESS(기본 127.0.0.1)로 로컬만 바인딩
+# .env 필수: DOCKERHUB_USERNAME, DB_URL(RDS 엔드포인트), MYSQL_USER, MYSQL_PASSWORD
+# 예) DB_URL=jdbc:mysql://your-rds.xxx.region.rds.amazonaws.com:3306/yourdb?useSSL=true
 services:
-  mysql:
-    image: mysql:8.0
-    container_name: hobby-mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    ports:
-      - "${MYSQL_BIND_ADDRESS:-127.0.0.1}:${MYSQL_PORT:-3306}:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-    command: --default-authentication-plugin=mysql_native_password
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "mysqladmin ping -h 127.0.0.1 -p$$MYSQL_ROOT_PASSWORD --silent",
-        ]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 30s
-
   api:
     image: ${DOCKERHUB_USERNAME}/hobby-api:${IMAGE_TAG:-latest}
     container_name: hobby-api
-    depends_on:
-      mysql:
-        condition: service_healthy
     ports:
       - "80:8080"
     env_file:
       - .env
     environment:
       SPRING_PROFILES_ACTIVE: docker
-      DB_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE}?allowPublicKeyRetrieval=true&useSSL=false
     restart: unless-stopped
-
-volumes:
-  mysql_data:
