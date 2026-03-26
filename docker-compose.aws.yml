@@ -1,6 +1,0 @@
-services:
-  mysql:
-    # MySQL 포트 퍼블리시 제거는 Compose 오버라이드로 확실히 지우기보다,
-    # base docker-compose.yml에서 MYSQL_BIND_ADDRESS(기본 127.0.0.1)로 호스트 바인딩만 로컬로 제한합니다.
-    # 그래서 AWS용 오버라이드는 추가 변경이 필요 없습니다.
-

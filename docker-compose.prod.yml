@@ -1,3 +1,6 @@
+# EC2(AWS) 등: 소스/Dockerfile 없이 Hub의 api 이미지만 받아서 돌릴 때
+# 사용: docker compose -f docker-compose.prod.yml pull && docker compose -f docker-compose.prod.yml up -d
+# .env 에 DOCKERHUB_USERNAME 필수. MySQL 포트는 base와 같이 MYSQL_BIND_ADDRESS(기본 127.0.0.1)로 로컬만 바인딩
 services:
   mysql:
     image: mysql:8.0
@@ -8,8 +11,6 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      # 로컬 개발에서는 localhost(127.0.0.1)로만 DB 접근 허용.
-      # AWS 배포 시에도 MySQL 포트가 외부에 노출되지 않게 하기 위함.
       - "${MYSQL_BIND_ADDRESS:-127.0.0.1}:${MYSQL_PORT:-3306}:3306"
     volumes:
       - mysql_data:/var/lib/mysql
@@ -26,11 +27,7 @@ services:
       start_period: 30s
 
   api:
-    # 빌드 후 같은 이름으로 푸시: docker compose push api (DOCKERHUB_USERNAME은 .env 등에 설정)
-    image: ${DOCKERHUB_USERNAME:-local}/hobby-api:${IMAGE_TAG:-latest}
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ${DOCKERHUB_USERNAME}/hobby-api:${IMAGE_TAG:-latest}
     container_name: hobby-api
     depends_on:
       mysql:
@@ -40,9 +37,7 @@ services:
     env_file:
       - .env
     environment:
-      # 기존 DB 볼륨과 엔티티 불일치 시 validate 실패 방지 (application-docker.properties)
       SPRING_PROFILES_ACTIVE: docker
-      # 컨테이너 간: mysql 서비스는 항상 내부 3306 (MYSQL_PORT 는 호스트 바인딩용이므로 여기서 쓰지 않음)
       DB_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE}?allowPublicKeyRetrieval=true&useSSL=false
     restart: unless-stopped
 
