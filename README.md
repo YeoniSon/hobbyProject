@@ -4,6 +4,14 @@
 
 ---
 
+## 프로젝트 시연 url
+http://3.39.10.40/swagger-ui/index.html
+
+### 채팅 사이트
+
+http://3.39.10.40/chat-demo.html
+
+---
 ## 📌 Project Overview
 
 관심사가 같은 사람들끼리 취미를 공유하고 소통하는 커뮤니티입니다. 

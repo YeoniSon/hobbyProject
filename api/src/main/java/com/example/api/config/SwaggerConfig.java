@@ -28,7 +28,12 @@ public class SwaggerConfig {
                 .servers(List.of(new Server().url("/").description("현재 문서와 동일 출처")))
                 .info(new Info()
                         .title("HobbyProject API")
-                        .description("취미 플랫폼 (개인 프로젝트) API")
+                        .description("""
+                                취미 플랫폼 REST API입니다.
+                                - 공개 API: Authorize 없이 호출 가능합니다.
+                                - 보호 API: 우측 Authorize에 Bearer {JWT} 형식으로 토큰을 넣은 뒤 호출합니다.
+                                - WebSocket(STOMP) 채팅은 이 HTTP 문서와 별도입니다.
+                                """)
                         .version("1.0"))
                 .components(new Components()
                         .addSecuritySchemes(sercuritySchemeName, securityScheme));

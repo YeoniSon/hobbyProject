@@ -7,6 +7,7 @@ import com.example.user.dto.response.UserDataReponse;
 import com.example.user.service.AdminService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,14 +17,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/admin")
+@Tag(name = "관리자", description = "관리자 계정·회원 관리 (대부분 JWT 필요)")
 @SecurityRequirement(name = "JWTAuth")
 @RequiredArgsConstructor
 public class AdminController {
 
     private final AdminService adminService;
 
-    // 관리자 등록
-    @Operation(security = {})
+    @Operation(summary = "관리자 등록", description = "초기 관리자 계정 등록(공개). 운영 시 보안 정책에 맞게 제한하세요.", security = {})
     @PostMapping("/register")
     public void register(
             @RequestBody SignUpRequest request
@@ -31,7 +32,7 @@ public class AdminController {
         adminService.adminRegister(request);
     }
 
-    // 계정 전체 조회
+    @Operation(summary = "전체 회원 조회", description = "모든 회원 목록을 조회합니다.")
     @GetMapping("/manage/users")
     public ResponseEntity<List<UserDataReponse>> getAllUsers(
             @AuthenticationPrincipal CustomUserDetails userDetails
@@ -39,7 +40,7 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getAllUsers());
     }
 
-    // 계정 삭제 처리 제외 전체 조회
+    @Operation(summary = "탈퇴 제외 회원 조회", description = "탈퇴 처리되지 않은 회원만 조회합니다.")
     @GetMapping("/manage/users-without-withdraw")
     public ResponseEntity<List<UserDataReponse>> getAllUsersWithoutWithdraw(
             @AuthenticationPrincipal CustomUserDetails userDetails
@@ -47,7 +48,7 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getAllUsersWithoutWithdraw());
     }
 
-    // 계정 삭제 처리 조회
+    @Operation(summary = "탈퇴 회원 조회", description = "탈퇴 처리된 회원만 조회합니다.")
     @GetMapping("/manage/withdraw-users")
     public ResponseEntity<List<UserDataReponse>> getAllWithdrawUsers(
             @AuthenticationPrincipal CustomUserDetails userDetails
@@ -55,7 +56,7 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getWithdrawUsers());
     }
 
-    // 특정 계정 정보 조회
+    @Operation(summary = "회원 단건 조회", description = "userId로 회원 상세를 조회합니다.")
     @GetMapping("/manage/{userId}")
     public ResponseEntity<UserDataReponse> getUserById(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -64,7 +65,7 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getUserById(userId));
     }
 
-    // 특정 계정 역할 변경
+    @Operation(summary = "회원 역할 변경", description = "회원의 역할(권한)을 변경합니다.")
     @PatchMapping("/manage/{userId}/role")
     public ResponseEntity<Void> changeRole(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -75,7 +76,7 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
-    // 특정 계정 삭제처리
+    @Operation(summary = "회원 탈퇴 처리", description = "관리자가 해당 회원을 탈퇴 처리합니다.")
     @PatchMapping("/manage/{userId}/withdraw")
     public ResponseEntity<Void> adminWithdraw(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -85,7 +86,7 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
-    // 특정 계정 복구처리
+    @Operation(summary = "회원 복구 처리", description = "탈퇴한 회원을 복구합니다.")
     @PatchMapping("/manage/{userId}/deposit")
     public ResponseEntity<Void> adminDeposit(
             @AuthenticationPrincipal CustomUserDetails userDetails,
